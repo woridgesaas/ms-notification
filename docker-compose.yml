@@ -1,0 +1,36 @@
+services:
+  woridge.ms-notification:
+        container_name: woridge-ms-notification
+        restart: unless-stopped
+        build:
+            context: .
+            dockerfile: Infra/Dockerfile
+        environment:
+            - ConnectionStrings__DefaultConnection=Server=${DB_HOST},1433;Database=${DB_NAME};User Id=${DB_USER};Password=${MSSQL_PASSWORD};TrustServerCertificate=True
+        ports:
+            - "5001:8080"
+        networks:
+            - woridge-external-network
+        depends_on:
+            - woridge.db.notification
+
+  woridge.db.notification:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        container_name: woridge-db-notif
+        restart: unless-stopped
+        environment:
+            - ACCEPT_EULA=Y
+            - MSSQL_SA_PASSWORD=${MSSQL_PASSWORD}
+        ports:
+            - "${MSSQL_PORT}:1433"
+        networks:
+            - woridge-external-network
+        volumes:
+            - ms-notification_db:/var/opt/mssql
+
+networks:
+  woridge-external-network:
+    external: true
+volumes:
+    ms-notification_db:
+        name: ms-notification_db
