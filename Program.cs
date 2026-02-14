@@ -1,4 +1,8 @@
+using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using MimeKit;
+using ms_notification.Options;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +11,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddHealthChecks()
     .AddSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+
+builder.Host.UseSerilog((context, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration));
+//Mapping Section in .json to the object c#
+builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -25,5 +35,29 @@ app.MapHealthChecks("/health", new HealthCheckOptions());
 app.MapGet("/health-API", () => "Healthcheck , MS-notification is UP");
 
 app.MapControllers();
+var smtpSettings = builder.Configuration.GetSection("SmtpSettings").Get<SmtpSettings>();
 
+try
+{
+    var message = new MimeMessage();
+    message.From.Add(new MailboxAddress(smtpSettings.SenderName, smtpSettings.SenderEmail));
+    message.To.Add(new MailboxAddress("Test Health", "test@example.com"));
+    message.Subject = "Health Check : Notification Service";
+
+    message.Body = new TextPart("plain")
+    {
+        Text = "This is just healthy check :)"
+    };
+    using var client = new SmtpClient();
+    
+    client.Connect(smtpSettings.Server, smtpSettings.Port, false);
+    client.Send(message);
+    client.Disconnect(true);
+    Console.WriteLine($"Success : Connected to SMTP : {smtpSettings.Server}");
+}
+catch (Exception ex)
+{
+    
+    Console.WriteLine($" Error : cannot connect to {smtpSettings.Server}. : {ex.Message}");
+}
 app.Run();

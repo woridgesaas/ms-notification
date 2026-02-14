@@ -7,12 +7,19 @@ services:
             dockerfile: Infra/Dockerfile
         environment:
             - ConnectionStrings__DefaultConnection=Server=${DB_HOST},1433;Database=${DB_NAME};User Id=${DB_USER};Password=${MSSQL_PASSWORD};TrustServerCertificate=True
+            - "SmtpSettings__Server=${SMTP_SERVER}"
+            - "SmtpSettings__Port=${SMTP_PORT}"
+            - "SmtpSettings__SenderEmail=${SMTP_SENDER_EMAIL}"
+            - "SmtpSettings__Username=${SMTP_USERNAME}"
+            - "SmtpSettings__Password=${SMTP_PASSWORD}"
+
         ports:
             - "5001:8080"
         networks:
             - woridge-external-network
         depends_on:
             - woridge.db.notification
+            - woridge.mailpit
 
   woridge.db.notification:
         image: mcr.microsoft.com/mssql/server:2022-latest
@@ -27,6 +34,18 @@ services:
             - woridge-external-network
         volumes:
             - ms-notification_db:/var/opt/mssql
+
+  woridge.mailpit:
+        image: axllent/mailpit:latest
+        container_name: mailpit_SMTP
+        restart: unless-stopped
+        ports:
+        #first port for UI and API, second port for SMTP
+            - "1025:1025"
+            - "8025:8025"
+        networks:
+            - woridge-external-network
+        
 
 networks:
   woridge-external-network:
