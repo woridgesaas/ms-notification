@@ -1,6 +1,7 @@
 using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using MimeKit;
+using ms_notification.Hubs;
 using ms_notification.Options;
 using Serilog;
 
@@ -17,6 +18,18 @@ builder.Host.UseSerilog((context, configuration) =>
 //Mapping Section in .json to the object c#
 builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
 
+//Add to service : instanciation
+builder.Services.AddSignalR();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("WoridgeCorsPolicy", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200") //Angular client
+              .AllowAnyHeader()                     // Headers
+              .AllowAnyMethod()                   
+              .AllowCredentials(); //like jwts or cookies                 
+    });
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -60,4 +73,6 @@ catch (Exception ex)
     
     Console.WriteLine($" Error : cannot connect to {smtpSettings.Server}. : {ex.Message}");
 }
+app.UseCors("WoridgeCorsPolicy");
+app.MapHub<NotificationHub>("/notificationHub");
 app.Run();
