@@ -4,10 +4,14 @@ using MimeKit;
 using ms_notification.Hubs;
 using ms_notification.Options;
 using Serilog;
+using ms_notification.Infra.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddDbContext<NotificationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddControllers();
 builder.Services.AddHealthChecks()
@@ -31,9 +35,13 @@ builder.Services.AddCors(options =>
     });
 });
 var app = builder.Build();
-
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<NotificationDbContext>();
+    db.Database.Migrate();
+}
 // Configure the HTTP request pipeline.
-if(app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
     
 }
@@ -73,6 +81,9 @@ catch (Exception ex)
     
     Console.WriteLine($" Error : cannot connect to {smtpSettings.Server}. : {ex.Message}");
 }
+
 app.UseCors("WoridgeCorsPolicy");
 app.MapHub<NotificationHub>("/notificationHub");
+
+
 app.Run();
