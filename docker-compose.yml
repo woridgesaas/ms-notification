@@ -4,7 +4,7 @@ services:
         restart: unless-stopped
         build:
             context: .
-            dockerfile: Infra/Dockerfile
+            dockerfile: Dockerfile
         environment:
             - ConnectionStrings__DefaultConnection=Server=${DB_HOST},1433;Database=${DB_NAME};User Id=${DB_USER};Password=${MSSQL_PASSWORD};TrustServerCertificate=True
             - "SmtpSettings__Server=${SMTP_SERVER}"
