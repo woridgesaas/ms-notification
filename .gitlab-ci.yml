@@ -10,6 +10,6 @@ build:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
   script:
-    -echo"Test" 
+    -echo "Test" 
     - docker build -t ms-notification .
   
