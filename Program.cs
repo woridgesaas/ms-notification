@@ -6,8 +6,14 @@ using ms_notification.Options;
 using Serilog;
 using ms_notification.Infra.Persistence;
 using Microsoft.EntityFrameworkCore;
+using DotNetEnv;
 
+Env.Load();
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddEnvironmentVariables();
+Console.WriteLine("ConnectionString: " + builder.Configuration.GetConnectionString("DefaultConnection"));
+Console.WriteLine("SMTP Server: " + builder.Configuration["SmtpSettings:Server"]);
+
 
 // Add services to the container.
 builder.Services.AddDbContext<NotificationDbContext>(options =>
