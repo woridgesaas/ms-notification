@@ -5,6 +5,7 @@ COPY ["ms-notification.csproj", "./"]
 RUN dotnet restore "./ms-notification.csproj"
 
 COPY . .
+RUN ls -la
 #Compile the project
 RUN dotnet publish "ms-notification.csproj" -c Release -o /app/publish
 #the contaienr will be destroyed now
