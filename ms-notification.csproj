@@ -6,16 +6,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>ms_notification</RootNamespace>
   </PropertyGroup>
+	<ItemGroup>
+		<Folder Include="Controllers\" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Remove="Templates\Email\EmployeeCreated.html" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Templates\Email\EmployeeCreated.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="8.0.0" />
