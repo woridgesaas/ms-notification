@@ -6,11 +6,11 @@ namespace ms_notification.Controllers;
 
 [ApiController]
 [Route("api/notifications")]
-public class NotificationController : ControllerBase
+public class TemplateController : ControllerBase
 {
     private readonly NotificationService _notificationService;
 
-    public NotificationController(NotificationService notificationService)
+    public TemplateController(NotificationService notificationService)
     {
         _notificationService = notificationService;
     }

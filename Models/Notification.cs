@@ -15,7 +15,6 @@ public class Notification
 
     //  Relation Template (important pour traçabilité)
     public int? TemplateId { get; set; }
-    public NotificationTemplate? Template { get; set; }
 
     public int CreatedByEmployeeId { get; set; }
     public Employee CreatedByEmployee { get; set; }

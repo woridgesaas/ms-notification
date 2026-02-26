@@ -8,11 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="templates\Email\EmployeeCreated.html" />
+    <None Remove="Templates\Email\EmployeeCreated.html" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="templates\Email\EmployeeCreated.html">
+    <Content Include="Templates\Email\EmployeeCreated.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
