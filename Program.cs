@@ -1,95 +1,123 @@
+using DotNetEnv;
 using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.EntityFrameworkCore;
 using MimeKit;
 using ms_notification.Hubs;
 using ms_notification.Options;
+using ms_notification.Persistence;
+using ms_notification.Services;
 using Serilog;
-using ms_notification.Infra.Persistence;
-using Microsoft.EntityFrameworkCore;
-using DotNetEnv;
 
 Env.Load();
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Charge aussi les variables d'environnement (après Env.Load)
 builder.Configuration.AddEnvironmentVariables();
-Console.WriteLine("ConnectionString: " + builder.Configuration.GetConnectionString("DefaultConnection"));
-Console.WriteLine("SMTP Server: " + builder.Configuration["SmtpSettings:Server"]);
 
+builder.Services.AddScoped<TemplateProvider>();
+builder.Services.AddScoped<TemplateRenderer>();
+builder.Services.AddScoped<EmailService>();
+builder.Services.AddScoped<NotificationService>();
+// Serilog (avant Build)
+builder.Host.UseSerilog((context, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration));
 
-// Add services to the container.
+// DbContext
 builder.Services.AddDbContext<NotificationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddControllers();
-builder.Services.AddHealthChecks()
-    .AddSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+// Controllers + HealthChecks
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(
+            new System.Text.Json.Serialization.JsonStringEnumConverter());
+    }); builder.Services.AddHealthChecks()
+    .AddSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")!);
 
-builder.Host.UseSerilog((context, configuration) =>
-    configuration.ReadFrom.Configuration(context.Configuration));
-//Mapping Section in .json to the object c#
+// Options binding (SmtpSettings)
 builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
 
-//Add to service : instanciation
+// SignalR
 builder.Services.AddSignalR();
+
+
+// CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("WoridgeCorsPolicy", policy =>
     {
-        policy.WithOrigins("http://localhost:4200") //Angular client
-              .AllowAnyHeader()                     // Headers
-              .AllowAnyMethod()                   
-              .AllowCredentials(); //like jwts or cookies                 
+        var allowedOrigins = builder.Configuration
+            .GetSection("Cors:AllowedOrigins")
+            .Get<string[]>();
+
+        // Si null ou vide => refuse tout (évite crash et évite config dangereuse)
+        if (allowedOrigins is null || allowedOrigins.Length == 0)
+            return;
+
+        policy.WithOrigins(allowedOrigins)
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
     });
 });
+
 var app = builder.Build();
+
+// Apply migrations
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<NotificationDbContext>();
     db.Database.Migrate();
 }
-// Configure the HTTP request pipeline.
+
+// Pipeline
 if (app.Environment.IsDevelopment())
 {
-    
+    // ex: app.UseSwagger(); app.UseSwaggerUI();
 }
+
 app.UseHttpsRedirection();
+
+app.UseRouting();
+
+app.UseCors("WoridgeCorsPolicy");
 
 app.UseAuthorization();
 
-//Healthcheck for database connectivity
+// Health endpoints
 app.MapHealthChecks("/health", new HealthCheckOptions());
+app.MapGet("/health-API", () => "Healthcheck, MS-notification is UP");
 
-//Healthcheck for applciation API
-app.MapGet("/health-API", () => "Healthcheck , MS-notification is UP");
-
+// Controllers + SignalR
 app.MapControllers();
-var smtpSettings = builder.Configuration.GetSection("SmtpSettings").Get<SmtpSettings>();
-
-try
-{
-    var message = new MimeMessage();
-    message.From.Add(new MailboxAddress(smtpSettings.SenderName, smtpSettings.SenderEmail));
-    message.To.Add(new MailboxAddress("Test Health", "test@example.com"));
-    message.Subject = "Health Check : Notification Service";
-
-    message.Body = new TextPart("plain")
-    {
-        Text = "This is just healthy check :)"
-    };
-    using var client = new SmtpClient();
-    
-    client.Connect(smtpSettings.Server, smtpSettings.Port, false);
-    client.Send(message);
-    client.Disconnect(true);
-    Console.WriteLine($"Success : Connected to SMTP : {smtpSettings.Server}");
-}
-catch (Exception ex)
-{
-    
-    Console.WriteLine($" Error : cannot connect to {smtpSettings.Server}. : {ex.Message}");
-}
-
-app.UseCors("WoridgeCorsPolicy");
 app.MapHub<NotificationHub>("/notificationHub");
 
+// SMTP health ping (optionnel)
+var smtpSettings = builder.Configuration.GetSection("SmtpSettings").Get<SmtpSettings>();
+if (smtpSettings is not null)
+{
+    try
+    {
+        var message = new MimeMessage();
+        message.From.Add(new MailboxAddress(smtpSettings.SenderName, smtpSettings.SenderEmail));
+        message.To.Add(new MailboxAddress("Test Health", "test@example.com"));
+        message.Subject = "Health Check : Notification Service";
+        message.Body = new TextPart("plain") { Text = "This is just a health check :)" };
+
+        using var client = new SmtpClient();
+        client.Connect(smtpSettings.Server, smtpSettings.Port, false);
+        client.Send(message);
+        client.Disconnect(true);
+
+        Console.WriteLine($"Success: Connected to SMTP: {smtpSettings.Server}");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error: cannot connect to {smtpSettings.Server}: {ex.Message}");
+    }
+}
 
 app.Run();
