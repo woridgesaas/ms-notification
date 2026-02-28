@@ -1,13 +1,18 @@
 using DotNetEnv;
 using MailKit.Net.Smtp;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using MimeKit;
 using ms_notification.Hubs;
+using ms_notification.Middleware;
 using ms_notification.Options;
 using ms_notification.Persistence;
+using ms_notification.Repositories;
 using ms_notification.Services;
 using Serilog;
+using System.Text;
 
 Env.Load();
 
@@ -20,6 +25,13 @@ builder.Services.AddScoped<TemplateProvider>();
 builder.Services.AddScoped<TemplateRenderer>();
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<NotificationService>();
+
+
+
+//
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<INotifService, NotifService>();
 // Serilog (avant Build)
 builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration));
@@ -64,6 +76,27 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)
+            )
+        };
+    });
+
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
 // Apply migrations
@@ -79,12 +112,16 @@ if (app.Environment.IsDevelopment())
     // ex: app.UseSwagger(); app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+
+app.UseMiddleware<ExceptionMiddleware>();
+
+//app.UseHttpsRedirection();
 
 app.UseRouting();
 
 app.UseCors("WoridgeCorsPolicy");
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 // Health endpoints
