@@ -27,13 +27,15 @@ public class NotificationDbContext : DbContext
         modelBuilder.Entity<NotificationReceive>()
             .HasOne(nr => nr.Notification)
             .WithMany(n => n.Receivers)
-            .HasForeignKey(nr => nr.NotificationId);
+            .HasForeignKey(nr => nr.NotificationId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         // 🔹 Relation NotificationReceive → Employee
         modelBuilder.Entity<NotificationReceive>()
             .HasOne(nr => nr.Employee)
             .WithMany(e => e.ReceivedNotifications)
-            .HasForeignKey(nr => nr.EmployeeId);
+            .HasForeignKey(nr => nr.EmployeeId)
+             .OnDelete(DeleteBehavior.Restrict);
 
         // 🔹 Relation Notification → CreatedByEmployee
         modelBuilder.Entity<Notification>()
