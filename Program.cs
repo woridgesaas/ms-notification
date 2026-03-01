@@ -1,11 +1,10 @@
 using DotNetEnv;
-using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
-using MimeKit;
+using ms_notification.Data;
 using ms_notification.Hubs;
 using ms_notification.Options;
-using ms_notification.Persistence;
+using ms_notification.Repositories;
 using ms_notification.Services;
 using Serilog;
 
@@ -13,13 +12,17 @@ Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Charge aussi les variables d'environnement (après Env.Load)
+// Charge aussi les variables d'environnement (aprï¿½s Env.Load)
 builder.Configuration.AddEnvironmentVariables();
 
-builder.Services.AddScoped<TemplateProvider>();
-builder.Services.AddScoped<TemplateRenderer>();
-builder.Services.AddScoped<EmailService>();
-builder.Services.AddScoped<NotificationService>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<ITemplateRendererService, TemplateRendererService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IEmailSenderService, EmailSenderService>();
+builder.Services.AddScoped<IAppService, AppService>();
+
 // Serilog (avant Build)
 builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration));
@@ -37,7 +40,7 @@ builder.Services.AddControllers()
     }); builder.Services.AddHealthChecks()
     .AddSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")!);
 
-// Options binding (SmtpSettings)
+// Smtp settings
 builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
 
 // SignalR
@@ -53,9 +56,12 @@ builder.Services.AddCors(options =>
             .GetSection("Cors:AllowedOrigins")
             .Get<string[]>();
 
-        // Si null ou vide => refuse tout (évite crash et évite config dangereuse)
+        // Si null ou vide => refuse tout (ï¿½vite crash et ï¿½vite config dangereuse)
         if (allowedOrigins is null || allowedOrigins.Length == 0)
+        {
             return;
+        }
+            
 
         policy.WithOrigins(allowedOrigins)
               .AllowAnyHeader()
@@ -66,17 +72,14 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Apply migrations
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<NotificationDbContext>();
-    db.Database.Migrate();
-}
-
 // Pipeline
 if (app.Environment.IsDevelopment())
 {
-    // ex: app.UseSwagger(); app.UseSwaggerUI();
+    // Apply migrations
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<NotificationDbContext>();
+    db.Database.Migrate();
+
 }
 
 app.UseHttpsRedirection();
@@ -94,30 +97,5 @@ app.MapGet("/health-API", () => "Healthcheck, MS-notification is UP");
 // Controllers + SignalR
 app.MapControllers();
 app.MapHub<NotificationHub>("/notificationHub");
-
-// SMTP health ping (optionnel)
-var smtpSettings = builder.Configuration.GetSection("SmtpSettings").Get<SmtpSettings>();
-if (smtpSettings is not null)
-{
-    try
-    {
-        var message = new MimeMessage();
-        message.From.Add(new MailboxAddress(smtpSettings.SenderName, smtpSettings.SenderEmail));
-        message.To.Add(new MailboxAddress("Test Health", "test@example.com"));
-        message.Subject = "Health Check : Notification Service";
-        message.Body = new TextPart("plain") { Text = "This is just a health check :)" };
-
-        using var client = new SmtpClient();
-        client.Connect(smtpSettings.Server, smtpSettings.Port, false);
-        client.Send(message);
-        client.Disconnect(true);
-
-        Console.WriteLine($"Success: Connected to SMTP: {smtpSettings.Server}");
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Error: cannot connect to {smtpSettings.Server}: {ex.Message}");
-    }
-}
 
 app.Run();

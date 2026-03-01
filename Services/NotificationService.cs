@@ -1,38 +1,26 @@
-﻿using ms_notification.Services;
-
+﻿using ms_notification.Enum;
+using ms_notification.Exceptions;
 namespace ms_notification.Services;
 
-public class NotificationService
+public class NotificationService(IEmailService emailService, IAppService appService) : INotificationService
 {
-    private readonly TemplateProvider _templateProvider;
-    private readonly TemplateRenderer _templateRenderer;
-    private readonly EmailService _emailService;
+    private readonly IEmailService _emailService = emailService;
+    private readonly IAppService _appService = appService;
 
-    public NotificationService(
-        TemplateProvider templateProvider,
-        TemplateRenderer templateRenderer,
-        EmailService emailService)
+    public async Task SendNotificationAsync<T>(SendNotificationRequest<T> sendNotificationRequest)
     {
-        _templateProvider = templateProvider;
-        _templateRenderer = templateRenderer;
-        _emailService = emailService;
-    }
-
-    public async Task SendAsync(
-        string templateName,
-        string channel,
-        string toEmail,
-        Dictionary<string, string> data)
-    {
-        var template = await _templateProvider.GetTemplateAsync(templateName, channel);
-
-        var body = _templateRenderer.Render(template, data);
-
-        if (channel.Equals("Email", StringComparison.OrdinalIgnoreCase))
+        switch (sendNotificationRequest.Channel)
         {
-            await _emailService.SendEmailAsync(toEmail, templateName, body);
-        }
+            case Channel.EMAIL:
+                await _emailService.SendViaEmailAsync(sendNotificationRequest);
+                break;
 
-        // Pour App notification tu pourras ajouter SignalR plus tard
+            case Channel.APP:
+                await _appService.SendViaAppAsync(sendNotificationRequest);
+                break;
+
+            default:
+                throw new NotificationChannelNotSupportedException("The following channel : " + sendNotificationRequest.Channel + " is not supported");
+        }
     }
 }
