@@ -1,8 +1,7 @@
-﻿namespace ms_notification.Enum
+﻿namespace ms_notification.Enum;
+
+public enum Channel
 {
-    public enum Channel
-    {
-        Email,
-        App
-    }
+    EMAIL = 1,
+    APP = 2
 }

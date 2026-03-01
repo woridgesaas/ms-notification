@@ -1,26 +1,10 @@
-﻿using ms_notification.DTO;
+﻿using ms_notification.DTOs;
 using ms_notification.Models;
 
 namespace ms_notification.Mappers;
 
 public static class NotificationMapper
 {
-    // CreateNotificationRequest -> Notification (insert)
-    public static Notification ToEntity(
-        CreateNotificationRequest dto, int employeeId)
-    {
-        return new Notification
-        {
-            Title = dto.Title,
-            Description = dto.Description,
-            Channel = dto.Channel,
-            Type = dto.Type,
-            Priority = dto.Priority,
-            CreatedByEmployeeId = employeeId,
-            CreationDate = DateTime.UtcNow
-        };
-    }
-
     // NotificationReceive -> NotificationResponse 
     public static NotificationResponse ToResponse(NotificationReceive receive)
     {
@@ -35,7 +19,7 @@ public static class NotificationMapper
             Type = n.Type.ToString(),
             Priority = n.Priority.ToString(),
             Status = n.Status.ToString(),
-            CreationDate = n.CreationDate,
+            CreationDate = n.CreatedAt,
             IsRead = receive.IsRead,
             ReadDate = receive.ReadDate
         };

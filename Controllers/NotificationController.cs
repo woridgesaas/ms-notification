@@ -1,34 +1,16 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ms_notification.DTO;
+using ms_notification.DTOs;
+using ms_notification.DTOs.Email;
 using ms_notification.Services;
-
 namespace ms_notification.Controllers;
 
+[Route("api/[controller]")]
 [ApiController]
-[Route("api/notifications")]
 [Authorize]
-public class NotificationController : ControllerBase
+public class NotificationController(INotificationService notificationService) : ControllerBase
 {
-    private readonly INotifService _service;
-
-    public NotificationController(INotifService service)
-    {
-        _service = service;
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Create(CreateNotificationRequest request)
-    {
-        var cin = User.FindFirst("CIN")?.Value;
-
-        if (cin == null)
-            return Unauthorized("CIN missing in token");
-
-        await _service.CreateNotificationAsync(request, cin);
-
-        return Ok(new { message = "Notification created successfully" });
-    }
+    private readonly INotificationService _notificationService = notificationService;
 
     [HttpGet]
     public async Task<IActionResult> GetMyNotifications()
@@ -38,7 +20,7 @@ public class NotificationController : ControllerBase
         if (cin == null)
             return Unauthorized("CIN missing in token");
 
-        var result = await _service.GetMyNotificationsAsync(cin);
+        var result = await _notificationService.GetMyNotificationsAsync(cin);
 
         return Ok(result);
     }
@@ -50,7 +32,7 @@ public class NotificationController : ControllerBase
         var cin = User.FindFirst("CIN")?.Value;
         if (cin == null) return Unauthorized();
 
-        var result = await _service.MarkAsReadAsync(id, cin);
+        var result = await _notificationService.MarkAsReadAsync(id, cin);
         return result ? NoContent() : NotFound();
     }
 
@@ -61,7 +43,44 @@ public class NotificationController : ControllerBase
         var cin = User.FindFirst("CIN")?.Value;
         if (cin == null) return Unauthorized();
 
-        await _service.MarkAllAsReadAsync(cin);
+        await _notificationService.MarkAllAsReadAsync(cin);
         return NoContent();
     }
+
+    [HttpPost("otp")]
+    public async Task<IActionResult> SendOtpNotification(SendNotificationRequest<OtpData> sendOtpNotificationRequest)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        await _notificationService.SendNotificationAsync(sendOtpNotificationRequest);
+        return Ok(
+            new SuccessResponse<string>
+            {
+                Message = "Notification sent successfully",
+                Data = null
+            }
+        );
+    }
+
+    [HttpPost("create-user")]
+    public async Task<IActionResult> SendCreateUserNotification(SendNotificationRequest<CreateUserData> sendCreateUserNotificationRequest)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        await _notificationService.SendNotificationAsync(sendCreateUserNotificationRequest);
+        return Ok(
+            new SuccessResponse<string>
+            {
+                Message = "Notification sent successfully",
+                Data = null
+            }
+        );
+    }
+
 }

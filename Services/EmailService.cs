@@ -1,30 +1,48 @@
-﻿using MailKit.Net.Smtp;
-using MimeKit;
-using Microsoft.Extensions.Options;
-using ms_notification.Options;
+﻿using ms_notification.Enum;
+using ms_notification.Exceptions;
+using ms_notification.Extensions;
+using ms_notification.Models;
+using ms_notification.Repositories;
 
 namespace ms_notification.Services;
 
-public class EmailService
+public class EmailService(INotificationRepository notificationRepository, IUserRepository userRepository, ITemplateRendererService templateRendererService, IEmailSenderService emailSenderService) : IEmailService
 {
-    private readonly SmtpSettings _smtpSettings;
+    private readonly INotificationRepository _notificationRepository = notificationRepository;
+    private readonly IUserRepository _userRepository = userRepository;
+    private readonly ITemplateRendererService _templateRendererService = templateRendererService;
+    private readonly IEmailSenderService _emailSenderService = emailSenderService;
 
-    public EmailService(IOptions<SmtpSettings> smtpOptions)
+
+    public async Task SendViaEmailAsync<T>(SendNotificationRequest<T> request)
     {
-        _smtpSettings = smtpOptions.Value;
+
+        //* Get employee by CIN
+        User user = await _userRepository.GetUserByCINAsync(request.CreatedBy) ?? throw new UserNotFoundException("User with the following CIN : " + request.CreatedBy + " not found");
+
+        //* Render template and get body
+        string body = await _templateRendererService.RenderTemplateAsync(request.TemplateCode, request.Data);
+
+        //* Get subject
+        string subject = TemplateCodeExtension.GetSubject(request.TemplateCode);
+
+        //* Send email
+        await _emailSenderService.SendEmailAsync(request.To, subject, body);
+
+        //* Persist notification after success
+        Notification notification = new()
+        {
+            Title = subject,
+            Channel = Channel.EMAIL,
+            Type = NotificationType.NOTIFICATION,
+            Priority = Priority.NORMAL,
+            Status = Status.SENT,
+            TemplateCode = request.TemplateCode,
+            CreatedBy = user.Id
+        };
+
+        //* Add notification to database
+        await _notificationRepository.AddNotificationAsync(notification);
     }
 
-    public async Task SendEmailAsync(string toEmail, string subject, string body)
-    {
-        var message = new MimeMessage();
-        message.From.Add(new MailboxAddress(_smtpSettings.SenderName, _smtpSettings.SenderEmail));
-        message.To.Add(MailboxAddress.Parse(toEmail));
-        message.Subject = subject;
-        message.Body = new TextPart("html") { Text = body };
-
-        using var client = new SmtpClient();
-        await client.ConnectAsync(_smtpSettings.Server, _smtpSettings.Port, false);
-        await client.SendAsync(message);
-        await client.DisconnectAsync(true);
-    }
 }

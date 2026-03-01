@@ -1,11 +1,10 @@
-﻿// Services/INotifService.cs
-using ms_notification.DTO;
+using ms_notification.DTOs;
 
 namespace ms_notification.Services;
 
-public interface INotifService
+public interface INotificationService
 {
-    Task CreateNotificationAsync(CreateNotificationRequest dto, string cin);
+    Task SendNotificationAsync<T>(SendNotificationRequest<T> sendNotificationRequest);
     Task<List<NotificationResponse>> GetMyNotificationsAsync(string cin);
     Task<bool> MarkAsReadAsync(int notificationId, string cin);
     Task MarkAllAsReadAsync(string cin);

@@ -1,4 +1,4 @@
-﻿namespace ms_notification.DTO;
+﻿namespace ms_notification.DTOs;
 
 public class NotificationResponse
 {

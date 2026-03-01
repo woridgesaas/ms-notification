@@ -1,17 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using ms_notification.Data;
 using ms_notification.Models;
-using ms_notification.Persistence;
 
 namespace ms_notification.Repositories;
 
-public class NotificationRepository: INotificationRepository
+public class NotificationRepository(NotificationDbContext context) : INotificationRepository
 {
-    private readonly NotificationDbContext _context;
-
-    public NotificationRepository(NotificationDbContext context)
-    {
-        _context = context;
-    }
+    private readonly NotificationDbContext _context = context;
 
     public async Task AddNotificationAsync(Notification notification)
     {
@@ -19,18 +14,12 @@ public class NotificationRepository: INotificationRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task AddReceiveAsync(NotificationReceive receive)
-    {
-        await _context.NotificationReceives.AddAsync(receive);
-        await _context.SaveChangesAsync();
-    }
-
     public async Task<List<NotificationReceive>> GetByEmployeeIdAsync(int employeeId)
     {
         return await _context.NotificationReceives
-            .Where(r => r.EmployeeId == employeeId)
+            .Where(r => r.UserId == employeeId)
             .Include(r => r.Notification)
-            .OrderByDescending(r => r.Notification.CreationDate)
+            .OrderByDescending(r => r.Notification.CreatedAt)
             .ToListAsync();
     }
 
@@ -40,14 +29,14 @@ public class NotificationRepository: INotificationRepository
         return await _context.NotificationReceives
             .FirstOrDefaultAsync(r =>
                 r.NotificationId == notificationId &&
-                r.EmployeeId == employeeId);
+                r.UserId == employeeId);
     }
 
     public async Task<List<NotificationReceive>> GetUnreadByEmployeeIdAsync(
         int employeeId)
     {
         return await _context.NotificationReceives
-            .Where(r => r.EmployeeId == employeeId && !r.IsRead)
+            .Where(r => r.UserId == employeeId && !r.IsRead)
             .ToListAsync();
     }
 
