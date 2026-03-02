@@ -16,5 +16,5 @@ RUN dotnet publish "ms-notification.csproj" -c Release -o /app/publish
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/publish .
-COPY Templates/ ./Templates/
+COPY templates/ ./Templates/
 ENTRYPOINT ["dotnet", "ms-notification.dll"]
