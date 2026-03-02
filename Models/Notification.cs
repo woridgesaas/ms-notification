@@ -8,7 +8,7 @@ public class Notification
     public string Title { get; set; } = null!;
     public string? Description { get; set; }
     public Channel Channel { get; set; }
-    public NotificationType Type { get; set; }
+    public NotificationType Type { get; set; } = NotificationType.NOTIFICATION;
     public Priority Priority { get; set; }
     public Status Status { get; set; } = Status.CREATED;
     public TemplateCode TemplateCode { get; set; }

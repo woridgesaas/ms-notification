@@ -22,13 +22,19 @@ public class NotificationService(IEmailService emailService, IAppService appServ
                 await _emailService.SendViaEmailAsync(sendNotificationRequest);
                 break;
 
-            case Channel.APP:
-                await _appService.SendViaAppAsync(sendNotificationRequest);
-                break;
+            /**case Channel.APP:
+                await _appService.SendViaAppAsync<PushNotificationRequest>(request);
+                break;*/
 
             default:
                 throw new NotificationChannelNotSupportedException("The following channel : " + sendNotificationRequest.Channel + " is not supported");
         }
+    }
+    
+    public async Task<NotificationResponse> SendPushNotificationAsync(PushNotificationRequest request)
+    {
+       
+             return await _appService.SendViaAppAsync<PushNotificationRequest>(request);
     }
 
     public async Task<List<NotificationResponse>> GetMyNotificationsAsync(string cin)
@@ -66,5 +72,6 @@ public class NotificationService(IEmailService emailService, IAppService appServ
 
         await _notificationRepository.SaveChangesAsync();
     }
+
 
 }

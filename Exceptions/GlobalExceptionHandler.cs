@@ -37,6 +37,7 @@ public class GlobalExceptionHandler(RequestDelegate request)
         {
             await WriteResponse(context, StatusCodes.Status404NotFound, exception.Message);
         }
+        
     
     }
 
