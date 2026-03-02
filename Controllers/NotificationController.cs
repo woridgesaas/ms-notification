@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using ms_notification.DTOs;
 using ms_notification.DTOs.Email;
 using ms_notification.Services;
+using System.ComponentModel.DataAnnotations;
 namespace ms_notification.Controllers;
 
 [Route("api/[controller]")]
@@ -84,6 +85,15 @@ public class NotificationController(INotificationService notificationService) : 
                 Data = null
             }
         );
+    }
+
+    [HttpPost("push")]
+    public async Task<IActionResult> SendPush([FromBody]PushNotificationRequest request)
+    {
+        
+        NotificationResponse result =await _notificationService.SendPushNotificationAsync(request);
+        Console.WriteLine(result + " In Controller");
+        return Ok(result);
     }
 
 }

@@ -13,7 +13,8 @@ RUN find /src -type f
 
 RUN dotnet publish "ms-notification.csproj" -c Release -o /app/publish
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/publish .
+COPY templates/ ./Templates/
 ENTRYPOINT ["dotnet", "ms-notification.dll"]

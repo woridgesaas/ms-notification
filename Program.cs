@@ -1,8 +1,10 @@
 using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using ms_notification.Config;
 using ms_notification.Data;
 using ms_notification.Hubs;
 using ms_notification.Options;
@@ -11,12 +13,14 @@ using ms_notification.Services;
 using Serilog;
 using System.Text;
 
-Env.Load();
+//Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Charge aussi les variables d'environnement (apr�s Env.Load)
 builder.Configuration.AddEnvironmentVariables();
+var connString = builder.Configuration.GetConnectionString("DefaultConnection");
+Console.WriteLine($"DEBUG CONNECTION STRING: {connString}");
 
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -25,7 +29,8 @@ builder.Services.AddScoped<ITemplateRendererService, TemplateRendererService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IEmailSenderService, EmailSenderService>();
 builder.Services.AddScoped<IAppService, AppService>();
-
+builder.Services.AddSingleton<IUserIdProvider, CinUserIdProvider>();
+builder.Services.AddScoped<ITemplateProvider, TemplateProvider>();
 // Serilog (avant Build)
 builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration));
@@ -64,10 +69,10 @@ builder.Services.AddCors(options =>
         {
             return;
         }
-            
 
-        policy.WithOrigins(allowedOrigins)
-              .AllowAnyHeader()
+
+        policy.SetIsOriginAllowed(_ => true)
+               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
     });
@@ -90,6 +95,23 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)
             )
         };
+        /** 
+            1)Authorize header in websocket are not allowed so we sent token in queryparam
+            2)Only for trafic camme to /notificationHub
+         */
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var token = context.Request.Query["access_token"].ToString();
+                var isHub = context.HttpContext.Request.Path.StartsWithSegments("/notificationHub");
+
+                if (isHub && !string.IsNullOrEmpty(token))
+                    context.Token = token;
+
+                return Task.CompletedTask;
+            }
+        };
     });
 
 builder.Services.AddAuthorization();
@@ -99,13 +121,13 @@ var app = builder.Build();
 // Pipeline
 if (app.Environment.IsDevelopment())
 {
-    // Apply migrations
-    using var scope = app.Services.CreateScope();
-    var db = scope.ServiceProvider.GetRequiredService<NotificationDbContext>();
-    db.Database.Migrate();
+   
 
 }
-
+// Apply migrations
+using var scope = app.Services.CreateScope();
+var db = scope.ServiceProvider.GetRequiredService<NotificationDbContext>();
+db.Database.Migrate();
 //app.UseHttpsRedirection();
 
 app.UseRouting();
