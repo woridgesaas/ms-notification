@@ -7,12 +7,13 @@ namespace ms_notification.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize]
+
 public class NotificationController(INotificationService notificationService) : ControllerBase
 {
     private readonly INotificationService _notificationService = notificationService;
 
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> GetMyNotifications()
     {
         var cin = User.FindFirst("CIN")?.Value;
@@ -25,8 +26,9 @@ public class NotificationController(INotificationService notificationService) : 
         return Ok(result);
     }
 
-    // PATCH /api/notifications/{id}/read
+    // PATCH /api/notification/{id}/read
     [HttpPatch("{id:int}/read")]
+    [Authorize]
     public async Task<IActionResult> MarkAsRead(int id)
     {
         var cin = User.FindFirst("CIN")?.Value;
@@ -36,8 +38,9 @@ public class NotificationController(INotificationService notificationService) : 
         return result ? NoContent() : NotFound();
     }
 
-    // PATCH /api/notifications/read-all
+    // PATCH /api/notification/read-all
     [HttpPatch("read-all")]
+    [Authorize]
     public async Task<IActionResult> MarkAllAsRead()
     {
         var cin = User.FindFirst("CIN")?.Value;
