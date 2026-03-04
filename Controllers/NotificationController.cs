@@ -69,6 +69,7 @@ public class NotificationController(INotificationService notificationService) : 
         );
     }
 
+
     [HttpPost("create-user")]
     public async Task<IActionResult> SendCreateUserNotification(SendNotificationRequest<CreateUserData> sendCreateUserNotificationRequest)
     {
