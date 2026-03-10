@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using ms_notification.DTOs;
 using ms_notification.DTOs.Email;
 using ms_notification.Services;
-using System.ComponentModel.DataAnnotations;
 namespace ms_notification.Controllers;
 
 [Route("api/[controller]")]
@@ -27,8 +26,7 @@ public class NotificationController(INotificationService notificationService) : 
         return Ok(result);
     }
 
-    // PATCH /api/notification/{id}/read
-    [HttpPatch("{id:int}/read")]
+    [HttpPatch("{id}")]
     [Authorize]
     public async Task<IActionResult> MarkAsRead(int id)
     {
@@ -38,9 +36,8 @@ public class NotificationController(INotificationService notificationService) : 
         var result = await _notificationService.MarkAsReadAsync(id, cin);
         return result ? NoContent() : NotFound();
     }
-
-    // PATCH /api/notification/read-all
-    [HttpPatch("read-all")]
+    
+    [HttpPatch]
     [Authorize]
     public async Task<IActionResult> MarkAllAsRead()
     {
