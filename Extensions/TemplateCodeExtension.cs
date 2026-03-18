@@ -11,6 +11,7 @@ public class TemplateCodeExtension
         {
             TemplateCode.OTP => "Your Verification Code",
             TemplateCode.USER_CREATED => "Welcome to Woridge",
+            TemplateCode.RESIGNATION_CONFIRMATION => "Fin de votre collaboration avec notre entreprise",
             _ => throw new TemplateCodeNotFoundException("The following template code : " + templateCode + " was not found")
         };
     }

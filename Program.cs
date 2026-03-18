@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ms_notification.Config;
+using ms_notification.Consumers;
 using ms_notification.Data;
 using ms_notification.Hubs;
 using ms_notification.Messaging.Consumers;
@@ -33,7 +34,11 @@ builder.Services.AddScoped<IAppService, AppService>();
 builder.Services.AddSingleton<IUserIdProvider, CinUserIdProvider>();
 builder.Services.AddSingleton<IRabbitMQConnection, RabbitMQConnection>(); 
 builder.Services.AddScoped<ITemplateProvider, TemplateProvider>();
+<<<<<<< HEAD
 builder.Services.AddHostedService<CreateUserConsumer>();//démarre automatiquement avec l'application.
+=======
+builder.Services.AddHostedService<ResignationConsumer>();
+>>>>>>> feature/create-email-resignation
 // Serilog (avant Build)
 builder.Host.UseSerilog((context, configuration) =>
  configuration.ReadFrom.Configuration(context.Configuration));

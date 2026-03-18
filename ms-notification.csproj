@@ -21,7 +21,11 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0" />
+<<<<<<< HEAD
     <PackageReference Include="RabbitMQ.Client" Version="7.2.1" />
+=======
+    <PackageReference Include="RabbitMQ.Client" Version="7.0.0" />
+>>>>>>> feature/create-email-resignation
     <PackageReference Include="RazorLight" Version="2.3.1" />
     <PackageReference Include="Serilog.AspNetCore" Version="8.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />

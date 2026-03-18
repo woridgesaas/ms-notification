@@ -1,4 +1,6 @@
 ﻿using ms_notification.DTOs;
+using ms_notification.DTOs.Email;
+using ms_notification.DTOs.Events;
 using ms_notification.Enum;
 using ms_notification.Exceptions;
 using ms_notification.Mappers;
@@ -73,5 +75,23 @@ public class NotificationService(IEmailService emailService, IAppService appServ
         await _notificationRepository.SaveChangesAsync();
     }
 
+    public async Task SendResignationNotificationAsync(ResignationCreatedEvent evt)
+    {
+        var request = new SendNotificationRequest<ResignationData>
+        {
+            To = evt.EmployeeEmail,
+            CreatedBy = evt.EmployeeCin,
+            Channel = Channel.EMAIL,
+            TemplateCode = TemplateCode.RESIGNATION_CONFIRMATION,
+            Data = new ResignationData
+            {
+                EmployeeFullName = evt.EmployeeFullName,
+                ResignationDate = evt.ResignationDate.ToString("dd/MM/yyyy"),
+                Reason = evt.Reason,
+                CompanyName = evt.CompanyName   // ← ajouter
+            }
+        };
 
+        await SendNotificationAsync(request);
+    }
 }

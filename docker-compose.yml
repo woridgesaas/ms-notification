@@ -14,7 +14,7 @@ services:
             - "SmtpSettings__Password=${SMTP_PASSWORD}"
 
         ports:
-            - "5001:8080"
+            - "${NOTIFICATION_PORT}:8080"
         networks:
             - woridge-external-network
         depends_on:
