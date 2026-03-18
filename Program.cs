@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ms_notification.Config;
+using ms_notification.Consumers;
 using ms_notification.Data;
 using ms_notification.Hubs;
 using ms_notification.Options;
@@ -31,6 +32,7 @@ builder.Services.AddScoped<IEmailSenderService, EmailSenderService>();
 builder.Services.AddScoped<IAppService, AppService>();
 builder.Services.AddSingleton<IUserIdProvider, CinUserIdProvider>();
 builder.Services.AddScoped<ITemplateProvider, TemplateProvider>();
+builder.Services.AddHostedService<ResignationConsumer>();
 // Serilog (avant Build)
 builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration));

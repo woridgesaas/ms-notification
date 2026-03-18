@@ -4,6 +4,7 @@ public enum TemplateCode
 {
     OTP = 1,
     USER_CREATED = 2,
-    CUSTOM = 3
+    CUSTOM = 3,
+    RESIGNATION_CONFIRMATION = 4
 
 }
