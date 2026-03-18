@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using ms_notification.Config;
 using ms_notification.Data;
 using ms_notification.Hubs;
+using ms_notification.Messaging.Consumers;
 using ms_notification.Options;
 using ms_notification.Repositories;
 using ms_notification.Services;
@@ -30,11 +31,17 @@ builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IEmailSenderService, EmailSenderService>();
 builder.Services.AddScoped<IAppService, AppService>();
 builder.Services.AddSingleton<IUserIdProvider, CinUserIdProvider>();
+builder.Services.AddSingleton<IRabbitMQConnection, RabbitMQConnection>(); 
 builder.Services.AddScoped<ITemplateProvider, TemplateProvider>();
+builder.Services.AddHostedService<CreateUserConsumer>();//démarre automatiquement avec l'application.
 // Serilog (avant Build)
 builder.Host.UseSerilog((context, configuration) =>
-    configuration.ReadFrom.Configuration(context.Configuration));
-
+ configuration.ReadFrom.Configuration(context.Configuration));
+/*builder.Host.UseSerilog((hostingContext, configuration) =>
+{
+configuration.ReadFrom.Configuration(hostingContext.Configuration)
+.WriteTo.Console();
+});*/
 // DbContext
 builder.Services.AddDbContext<NotificationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -115,6 +122,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddAuthorization();
+
+builder.Services.Configure<RabbitMQSettings>(
+    builder.Configuration.GetSection("RabbitMQ"));
 
 var app = builder.Build();
 

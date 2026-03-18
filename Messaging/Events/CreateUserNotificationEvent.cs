@@ -1,8 +1,9 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace ms_notification.DTOs.Email;
+namespace ms_notification.Messaging.Events;
 
-public class CreateUserData
+public class CreateUserNotificationEvent
 {
     [Required(ErrorMessage = "Full name is required")]
     [StringLength(50, MinimumLength = 5, ErrorMessage = "Full name must be between 5 and 50 characters")]
