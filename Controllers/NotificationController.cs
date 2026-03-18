@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ms_notification.DTOs;
 using ms_notification.DTOs.Email;
+using ms_notification.Messaging.Events;
 using ms_notification.Services;
 namespace ms_notification.Controllers;
 
@@ -68,7 +69,7 @@ public class NotificationController(INotificationService notificationService) : 
 
 
     [HttpPost("create-user")]
-    public async Task<IActionResult> SendCreateUserNotification(SendNotificationRequest<CreateUserData> sendCreateUserNotificationRequest)
+    public async Task<IActionResult> SendCreateUserNotification(SendNotificationRequest<CreateUserNotificationEvent> sendCreateUserNotificationRequest)
     {
         if (!ModelState.IsValid)
         {
