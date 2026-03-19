@@ -1,5 +1,5 @@
 using ms_notification.DTOs;
-using ms_notification.DTOs.Events;
+using ms_notification.Messaging.Events;
 
 namespace ms_notification.Services;
 

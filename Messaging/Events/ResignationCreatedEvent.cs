@@ -1,4 +1,4 @@
-﻿namespace ms_notification.DTOs.Events;
+﻿namespace ms_notification.Messaging.Events;
 
 public class ResignationCreatedEvent
 {

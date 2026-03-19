@@ -7,4 +7,5 @@ namespace ms_notification.Options;
 public sealed class RabbitMQRoutingKeys
 {
     public string UserCreated { get; set; } = default!;
+    public string ResignationCreated { get; set; } = default!;
 }

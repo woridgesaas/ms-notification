@@ -1,6 +1,6 @@
 ﻿using ms_notification.DTOs;
 using ms_notification.DTOs.Email;
-using ms_notification.DTOs.Events;
+using ms_notification.Messaging.Events;
 using ms_notification.Enum;
 using ms_notification.Exceptions;
 using ms_notification.Mappers;

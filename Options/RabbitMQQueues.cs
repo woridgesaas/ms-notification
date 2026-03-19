@@ -7,4 +7,5 @@ namespace ms_notification.Options;
 public sealed class RabbitMQQueues
 {
     public string UserCreated { get; set; } = default!;
+    public string ResignationCreated { get; set; } = default!;
 }

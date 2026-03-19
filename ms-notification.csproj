@@ -32,10 +32,5 @@
     <CopyToPublishDirectory>Always</CopyToPublishDirectory>
   </Content>
 </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Messaging/" />
-    <Folder Include="Messaging/Consumers/" />
-    <Folder Include="Messaging/Events/" />
-  </ItemGroup>
 
 </Project>
