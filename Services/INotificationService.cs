@@ -1,4 +1,5 @@
 using ms_notification.DTOs;
+using ms_notification.Messaging.Events;
 
 namespace ms_notification.Services;
 
@@ -9,4 +10,5 @@ public interface INotificationService
     Task<List<NotificationResponse>> GetMyNotificationsAsync(string cin);
     Task<bool> MarkAsReadAsync(int notificationId, string cin);
     Task MarkAllAsReadAsync(string cin);
+    Task SendResignationNotificationAsync(ResignationCreatedEvent evt);
 }

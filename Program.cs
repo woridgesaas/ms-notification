@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ms_notification.Config;
+
 using ms_notification.Data;
 using ms_notification.Hubs;
 using ms_notification.Messaging.Consumers;
@@ -17,6 +18,10 @@ using System.Text;
 //Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Serilog (avant Build)
+builder.Host.UseSerilog((context, configuration) =>
+ configuration.ReadFrom.Configuration(context.Configuration));
 
 // Charge aussi les variables d'environnement (apr�s Env.Load)
 builder.Configuration.AddEnvironmentVariables();
@@ -34,9 +39,8 @@ builder.Services.AddSingleton<IUserIdProvider, CinUserIdProvider>();
 builder.Services.AddSingleton<IRabbitMQConnection, RabbitMQConnection>(); 
 builder.Services.AddScoped<ITemplateProvider, TemplateProvider>();
 builder.Services.AddHostedService<CreateUserConsumer>();//démarre automatiquement avec l'application.
-// Serilog (avant Build)
-builder.Host.UseSerilog((context, configuration) =>
- configuration.ReadFrom.Configuration(context.Configuration));
+builder.Services.AddHostedService<ResignationConsumer>();
+
 /*builder.Host.UseSerilog((hostingContext, configuration) =>
 {
 configuration.ReadFrom.Configuration(hostingContext.Configuration)
