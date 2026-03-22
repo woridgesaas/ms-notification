@@ -13,7 +13,7 @@ public class EmailSenderService(IOptions<SmtpSettings> options) : IEmailSenderSe
     {
         var message = new MimeMessage();
 
-        message.From.Add(new MailboxAddress(_smtpSettings.FromName, _smtpSettings.FromEmail));
+        message.From.Add(new MailboxAddress(_smtpSettings.SenderName, _smtpSettings.SenderEmail));
         message.To.Add(MailboxAddress.Parse(to));
         message.Subject = subject;
 

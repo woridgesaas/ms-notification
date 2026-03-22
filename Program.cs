@@ -14,14 +14,12 @@ using ms_notification.Services;
 using Serilog;
 using System.Text;
 
-//Env.Load();
+Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Charge aussi les variables d'environnement (apr�s Env.Load)
+
 builder.Configuration.AddEnvironmentVariables();
-var connString = builder.Configuration.GetConnectionString("DefaultConnection");
-Console.WriteLine($"DEBUG CONNECTION STRING: {connString}");
 
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -31,18 +29,18 @@ builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IEmailSenderService, EmailSenderService>();
 builder.Services.AddScoped<IAppService, AppService>();
 builder.Services.AddSingleton<IUserIdProvider, CinUserIdProvider>();
-builder.Services.AddSingleton<IRabbitMQConnection, RabbitMQConnection>(); 
+builder.Services.AddSingleton<IRabbitMQConnection, RabbitMQConnection>();
 builder.Services.AddScoped<ITemplateProvider, TemplateProvider>();
 builder.Services.AddHostedService<CreateUserConsumer>();//démarre automatiquement avec l'application.
-// Serilog (avant Build)
-builder.Host.UseSerilog((context, configuration) =>
- configuration.ReadFrom.Configuration(context.Configuration));
-/*builder.Host.UseSerilog((hostingContext, configuration) =>
+
+// Serilog configuration
+ builder.Host.UseSerilog((hostingContext, configuration) =>
 {
-configuration.ReadFrom.Configuration(hostingContext.Configuration)
-.WriteTo.Console();
-});*/
-// DbContext
+    configuration
+        .ReadFrom.Configuration(hostingContext.Configuration)
+        .WriteTo.Console();
+});
+
 builder.Services.AddDbContext<NotificationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -94,18 +92,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
-
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)
             )
         };
-        /** 
-            1)Authorize header in websocket are not allowed so we sent token in queryparam
-            2)Only for trafic camme to /notificationHub
-         */
+
+        //* This handles the SignalR token from query param
         options.Events = new JwtBearerEvents
         {
             OnMessageReceived = context =>
@@ -131,7 +125,7 @@ var app = builder.Build();
 // Pipeline
 if (app.Environment.IsDevelopment())
 {
-   
+
 
 }
 // Apply migrations

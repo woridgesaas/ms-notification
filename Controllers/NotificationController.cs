@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ms_notification.DTOs;
 using ms_notification.DTOs.Email;
@@ -8,13 +7,11 @@ namespace ms_notification.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-
 public class NotificationController(INotificationService notificationService) : ControllerBase
 {
     private readonly INotificationService _notificationService = notificationService;
 
     [HttpGet]
-    [Authorize]
     public async Task<IActionResult> GetMyNotifications()
     {
         var cin = User.FindFirst("CIN")?.Value;
@@ -28,7 +25,6 @@ public class NotificationController(INotificationService notificationService) : 
     }
 
     [HttpPatch("{id}")]
-    [Authorize]
     public async Task<IActionResult> MarkAsRead(int id)
     {
         var cin = User.FindFirst("CIN")?.Value;
@@ -37,9 +33,8 @@ public class NotificationController(INotificationService notificationService) : 
         var result = await _notificationService.MarkAsReadAsync(id, cin);
         return result ? NoContent() : NotFound();
     }
-    
+
     [HttpPatch]
-    [Authorize]
     public async Task<IActionResult> MarkAllAsRead()
     {
         var cin = User.FindFirst("CIN")?.Value;
@@ -87,10 +82,10 @@ public class NotificationController(INotificationService notificationService) : 
     }
 
     [HttpPost("push")]
-    public async Task<IActionResult> SendPush([FromBody]PushNotificationRequest request)
+    public async Task<IActionResult> SendPush([FromBody] PushNotificationRequest request)
     {
-        
-        NotificationResponse result =await _notificationService.SendPushNotificationAsync(request);
+
+        NotificationResponse result = await _notificationService.SendPushNotificationAsync(request);
         Console.WriteLine(result + " In Controller");
         return Ok(result);
     }
