@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Alerte critique — Direction</title>
+</head>
+<body style="margin:0;padding:0;background-color:#F4F3FF;font-family:Arial,Helvetica,sans-serif;">
+
+    <div style="background:#D63031;padding:12px 16px;border-radius:8px 8px 0 0;">
+        <h3 style="color:#ffffff;margin:0;font-size:14px;">🔴 Alerte Critique — Direction</h3>
+    </div>
+
+    <div style="background:#ffffff;padding:16px;border-radius:0 0 8px 8px;">
+        <p style="color:#D63031;font-size:13px;font-weight:bold;margin:0 0 12px 0;">
+            Un employé dépasse le seuil d'absences non justifiées.
+        </p>
+
+        <div style="background:#FFF5F5;border-left:4px solid #D63031;border-radius:6px;padding:12px;font-size:13px;color:#333;">
+            <p style="margin:4px 0;"><strong>Employé :</strong> {{EmployeeFullName}}</p>
+            <p style="margin:4px 0;"><strong>Email :</strong> {{EmployeeEmail}}</p>
+            <p style="margin:4px 0;"><strong>Date :</strong> {{AbsenceDate}}</p>
+            <p style="margin:4px 0;"><strong>Jours consécutifs :</strong> {{ConsecutiveDays}}</p>
+        </div>
+
+        <p style="color:#555;font-size:12px;margin:12px 0 0 0;">
+            Une procédure disciplinaire a été automatiquement déclenchée.
+        </p>
+    </div>
+
+    <div style="text-align:center;padding:8px;font-size:11px;color:#888;">
+        © 2026 Woridge. Tous droits réservés.
+    </div>
+
+</body>
+</html>

@@ -40,6 +40,8 @@ builder.Services.AddSingleton<IRabbitMQConnection, RabbitMQConnection>();
 builder.Services.AddScoped<ITemplateProvider, TemplateProvider>();
 builder.Services.AddHostedService<CreateUserConsumer>();//démarre automatiquement avec l'application.
 builder.Services.AddHostedService<ResignationConsumer>();
+builder.Services.AddHostedService<AbsenceAlertRhConsumer>();
+builder.Services.AddHostedService<AbsenceAlertCeoConsumer>();
 
 /*builder.Host.UseSerilog((hostingContext, configuration) =>
 {
