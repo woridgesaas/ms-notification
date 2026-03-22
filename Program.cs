@@ -54,7 +54,10 @@ builder.Services.AddScoped<IAppService, AppService>();
 builder.Services.AddSingleton<IUserIdProvider, CinUserIdProvider>();
 builder.Services.AddSingleton<IRabbitMQConnection, RabbitMQConnection>();
 builder.Services.AddScoped<ITemplateProvider, TemplateProvider>();
-builder.Services.AddHostedService<CreateUserConsumer>();
+builder.Services.AddHostedService<CreateUserConsumer>();//démarre automatiquement avec l'application.
+builder.Services.AddHostedService<ResignationConsumer>();
+builder.Services.AddHostedService<AbsenceAlertRhConsumer>();
+builder.Services.AddHostedService<AbsenceAlertCeoConsumer>();
 
 // * SignalR
 builder.Services.AddSignalR();
