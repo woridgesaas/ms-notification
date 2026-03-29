@@ -11,5 +11,5 @@ build:
     DOCKER_TLS_CERTDIR: ""
   script:
     - echo "Test" 
-    - docker build -t ms-notification .
+    - docker build -t ms-notification -f Infra/Dockerfile .
   
