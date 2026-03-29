@@ -47,7 +47,7 @@ public class NotificationDbContext(DbContextOptions<NotificationDbContext> optio
 
         notification.Property(x => x.Title).HasColumnName("title").IsRequired().HasMaxLength(50);
 
-        notification.Property(x => x.Description).HasColumnName("description").HasMaxLength(255);
+        notification.Property(x => x.Description).HasColumnName("description").HasColumnType("nvarchar(max)").IsRequired(false);
 
         notification.Property(x => x.Channel).HasColumnName("channel").HasConversion<string>().HasMaxLength(50).IsRequired();
 

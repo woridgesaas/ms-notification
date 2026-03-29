@@ -4,7 +4,7 @@ services:
         restart: unless-stopped
         build:
             context: .
-            dockerfile: Dockerfile
+            dockerfile: Infra/Dockerfile
         environment:
             - ConnectionStrings__DefaultConnection=Server=${DB_HOST},1433;Database=${DB_NAME};User Id=${DB_USER};Password=${MSSQL_PASSWORD};TrustServerCertificate=True
             - "SmtpSettings__Server=${SMTP_SERVER}"
@@ -12,6 +12,7 @@ services:
             - "SmtpSettings__SenderEmail=${SMTP_SENDER_EMAIL}"
             - "SmtpSettings__Username=${SMTP_USERNAME}"
             - "SmtpSettings__Password=${SMTP_PASSWORD}"
+            - "SmtpSettings__UseSsl=${SMTP_USE_SSL}"
 
         ports:
             - "${NOTIFICATION_PORT}:8080"
