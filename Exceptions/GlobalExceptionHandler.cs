@@ -37,7 +37,7 @@ public class GlobalExceptionHandler(RequestDelegate request)
         {
             await WriteResponse(context, StatusCodes.Status404NotFound, exception.Message);
         }
-         catch (AbsenceAlertConsumerException exception)  // ✅ nouveau
+         catch (AbsenceAlertConsumerException exception)  
         {
             await WriteResponse(context, StatusCodes.Status500InternalServerError, exception.Message);
         }
