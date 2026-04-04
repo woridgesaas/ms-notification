@@ -46,11 +46,15 @@ services:
             - "8025:8025"
         networks:
             - woridge-external-network
+            - mailer-network
         
 
 networks:
   woridge-external-network:
     external: true
+  mailer-network:
+    external: true
+    
 volumes:
     ms-notification_db:
         name: ms-notification_db

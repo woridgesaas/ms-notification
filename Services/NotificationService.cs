@@ -88,7 +88,7 @@ public class NotificationService(IEmailService emailService, IAppService appServ
                 EmployeeFullName = evt.EmployeeFullName,
                 ResignationDate = evt.ResignationDate.ToString("dd/MM/yyyy"),
                 Reason = evt.Reason,
-                CompanyName = evt.CompanyName   // ← ajouter
+                CompanyName = evt.CompanyName  
             }
         };
 

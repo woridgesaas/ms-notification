@@ -13,6 +13,7 @@ public class TemplateCodeExtension
             TemplateCode.USER_CREATED => "Welcome to Woridge",
             TemplateCode.RESIGNATION_CONFIRMATION => "Fin de votre collaboration avec notre entreprise",
             TemplateCode.ABSENCE_ALERT_USER => "Absence non justifiée — Action requise",
+            TemplateCode.OVERTIME_ALERT_EMPLOYEE => "Statut de vos heures supplémentaires",
             _ => throw new TemplateCodeNotFoundException("The following template code : " + templateCode + " was not found"),
     
         };

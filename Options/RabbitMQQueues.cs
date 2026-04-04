@@ -10,4 +10,5 @@ public sealed class RabbitMQQueues
     public string ResignationCreated { get; set; } = default!;
     public string AbsenceAlertRh { get; set; } = null!;  
     public string AbsenceAlertCeo { get; set; } = null!;
+    public string OvertimeHandleAlert { get; set; } = null!;
 }
