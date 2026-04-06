@@ -11,4 +11,5 @@ public sealed class RabbitMQQueues
     public string AbsenceAlertRh { get; set; } = null!;  
     public string AbsenceAlertCeo { get; set; } = null!;
     public string ChangePasswordOtp { get; set; } = default!;
+    public string OvertimeHandleAlert { get; set; } = null!;
 }

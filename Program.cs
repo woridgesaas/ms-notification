@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using ms_notification.Config;
 using ms_notification.Data;
 using ms_notification.Exceptions;
+using ms_notification.Factories;
 using ms_notification.Hubs;
 using ms_notification.Messaging.Consumers;
 using ms_notification.Options;
@@ -51,6 +52,7 @@ builder.Services.AddScoped<ITemplateRendererService, TemplateRendererService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IEmailSenderService, EmailSenderService>();
 builder.Services.AddScoped<IAppService, AppService>();
+builder.Services.AddScoped<INotificationRequestFactory, NotificationRequestFactory>();
 builder.Services.AddSingleton<IUserIdProvider, CinUserIdProvider>();
 builder.Services.AddSingleton<IRabbitMQConnection, RabbitMQConnection>();
 builder.Services.AddScoped<ITemplateProvider, TemplateProvider>();
@@ -59,6 +61,8 @@ builder.Services.AddHostedService<ResignationConsumer>();
 builder.Services.AddHostedService<AbsenceAlertRhConsumer>();
 builder.Services.AddHostedService<AbsenceAlertCeoConsumer>();
 builder.Services.AddHostedService<ChangePasswordOtpRequestedConsumer>();
+builder.Services.AddHostedService<OvertimeHandleConsumer>();
+
 // * SignalR
 builder.Services.AddSignalR();
 
