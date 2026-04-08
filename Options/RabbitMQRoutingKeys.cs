@@ -12,6 +12,7 @@ public sealed class RabbitMQRoutingKeys
     public string ResignationCreated { get; set; } = default!;
     public string AbsenceAlertRh { get; set; } = null!; 
     public string AbsenceAlertCeo { get; set; } = null!;
+    public string ChangePasswordOtp { get; set; } = default!;
     public string OvertimeProcessedAlert { get; set; } = null!;
     public string LeaveProcessedAlert { get; set; } = null!;
 }

@@ -60,6 +60,7 @@ builder.Services.AddHostedService<CreateUserConsumer>();//démarre automatiqueme
 builder.Services.AddHostedService<ResignationConsumer>();
 builder.Services.AddHostedService<AbsenceAlertRhConsumer>();
 builder.Services.AddHostedService<AbsenceAlertCeoConsumer>();
+builder.Services.AddHostedService<ChangePasswordOtpRequestedConsumer>();
 builder.Services.AddHostedService<OvertimeHandleConsumer>();
 builder.Services.AddHostedService<LeaveHandleConsumer>();
 
