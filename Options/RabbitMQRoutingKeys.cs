@@ -1,3 +1,5 @@
+using RabbitMQ.Client.Exceptions;
+
 namespace ms_notification.Options;
 
 /// <summary>
@@ -12,4 +14,5 @@ public sealed class RabbitMQRoutingKeys
     public string AbsenceAlertCeo { get; set; } = null!;
     public string ChangePasswordOtp { get; set; } = default!;
     public string OvertimeProcessedAlert { get; set; } = null!;
+    public string LeaveProcessedAlert { get; set; } = null!;
 }

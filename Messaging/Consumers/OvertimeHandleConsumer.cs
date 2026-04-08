@@ -1,5 +1,8 @@
 ﻿using Microsoft.Extensions.Options;
+using ms_notification.DTOs.Email;
+using ms_notification.Enum;
 using ms_notification.Exceptions;
+using ms_notification.Factories;
 using ms_notification.Messaging.Events;
 using ms_notification.Options;
 using ms_notification.Services;
@@ -8,8 +11,6 @@ using RabbitMQ.Client.Events;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using ms_notification.DTOs.Email;
-using ms_notification.Factories;
 
 namespace ms_notification.Messaging.Consumers
 {
@@ -56,7 +57,7 @@ namespace ms_notification.Messaging.Consumers
                     var _notificationService=scope.ServiceProvider.GetRequiredService <INotificationService>();
                     var factory = scope.ServiceProvider.GetRequiredService<INotificationRequestFactory>();
 
-                    var request = factory.CreateOvertimeRequest(overtimeAlert);
+                    var request = factory.CreateRequest<OvertimeProcessData>(overtimeAlert, TemplateCode.OVERTIME_ALERT_EMPLOYEE);
                     await _notificationService.SendNotificationAsync<OvertimeProcessData>(request);
 
                     await _channel.BasicAckAsync(ea.DeliveryTag, false);
@@ -64,13 +65,9 @@ namespace ms_notification.Messaging.Consumers
                 }catch(RabbitMQConsumerException ex)
                 {
                     await this._channel.BasicNackAsync(ea.DeliveryTag, multiple:false , requeue:false);
-
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"[FATAL] Erreur de traitement : {ex.Message}");
-                    if (ex.InnerException != null)
-                        Console.WriteLine($"[INNER] : {ex.InnerException.Message}");
                     await this._channel.BasicNackAsync(ea.DeliveryTag, multiple:false , requeue:false);
                 }
                 
