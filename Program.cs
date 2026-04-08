@@ -61,6 +61,7 @@ builder.Services.AddHostedService<ResignationConsumer>();
 builder.Services.AddHostedService<AbsenceAlertRhConsumer>();
 builder.Services.AddHostedService<AbsenceAlertCeoConsumer>();
 builder.Services.AddHostedService<OvertimeHandleConsumer>();
+builder.Services.AddHostedService<LeaveHandleConsumer>();
 
 // * SignalR
 builder.Services.AddSignalR();

@@ -7,6 +7,8 @@ namespace ms_notification.Factories
     public interface INotificationRequestFactory
     {
        
-        SendNotificationRequest<OvertimeProcessData> CreateOvertimeRequest(OvertimeHandleEvent ev);
+        SendNotificationRequest<TData> CreateRequest<TData>(AbstractEvent ev , TemplateCode templateCode)
+          where TData:class;
+
     }
 }

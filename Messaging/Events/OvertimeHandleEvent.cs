@@ -2,11 +2,8 @@
 
 namespace ms_notification.Messaging.Events
 {
-    public class OvertimeHandleEvent
+    public class OvertimeHandleEvent : AbstractEvent
     {
-        public string ? EmployeeFullName { get; set; }
-        public string ?EmployeeCin { get; set; }
-        public string ?EmployeeEmail { get; set; }
         public string ?ManagerComment { get; set; }
         public double TotalHours { get; set; }
         public DateTime ProcessedAt { get;set; }

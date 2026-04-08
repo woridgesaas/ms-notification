@@ -1,0 +1,118 @@
+﻿@model ms_notification.DTOs.Email.LeaveProcessData
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Notification — Demande de congé</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        @@media only screen and (max-width: 480px) {
+            table {
+                width: 100% !important;
+            }
+
+            h1 {
+                font-size: 20px !important;
+            }
+
+            p {
+                font-size: 14px !important;
+                line-height: 1.4 !important;
+            }
+
+            td {
+                padding: 15px !important;
+            }
+        }
+    </style>
+</head>
+<body style="margin:0;padding:0;background-color:#F4F3FF;font-family:Arial,Helvetica,sans-serif;">
+
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#F4F3FF;padding:40px 0;">
+        <tr>
+            <td align="center">
+
+                <table width="600" cellpadding="0" cellspacing="0"
+                       style="background:#ffffff;border-radius:10px;overflow:hidden;
+                              box-shadow:0 8px 20px rgba(0,0,0,0.05);">
+
+                    <!-- Header -->
+                    <tr>
+                        <td align="center" style="background:#A29BFE;padding:25px;">
+                            <h1 style="color:#ffffff;margin:0;font-size:24px;">
+                                Statut de votre demande de congé
+                            </h1>
+                        </td>
+                    </tr>
+
+                    <!-- Content -->
+                    <tr>
+                        <td style="padding:40px 30px;">
+
+                            <h2 style="color:#333;margin-top:0;">
+                                Bonjour @Model.EmployeeFullName,
+                            </h2>
+
+                            <p style="color:#555;font-size:16px;line-height:1.6;">
+                                Votre demande de congé du
+                                <strong style="color:#6C63FF;">@Model.StartDate.ToString("dd/MM/yyyy")</strong>
+                                au
+                                <strong style="color:#6C63FF;">@Model.EndDate.ToString("dd/MM/yyyy")</strong>
+                                a été examinée le
+                                <strong style="color:#6C63FF;">@Model.DecisionDate.ToString("dd/MM/yyyy HH:mm")</strong>.
+                            </p>
+
+                            <!-- Status Box -->
+                            <table width="100%" cellpadding="0" cellspacing="0"
+                                   style="margin:30px 0;background:#F4F3FF;border-radius:8px;">
+                                <tr>
+                                    <td style="padding:16px 24px;color:#333;font-size:15px;">
+                                        <p style="margin:0;">
+                                            <strong>Type de congé :</strong> @Model.LeaveType
+                                        </p>
+                                        <p style="margin:6px 0 0;">
+                                            <strong>Statut :</strong>
+                                            @if(Model.DecisionStatus == ms_notification.Enum.LeaveRequestDecision.APPROVED)
+                                            {
+                                            <span style="color:green;font-weight:bold;">Accepté</span>
+                                            }
+                                            else
+                                            {
+                                            <span style="color:red;font-weight:bold;">Refusé</span>
+                                            }
+                                        </p>
+                                        @if(!string.IsNullOrEmpty(Model.ApprovedByFullName))
+                                        {
+                                        <p style="margin:6px 0 0;">
+                                            <strong>Approuvé par :</strong> @Model.ApprovedByFullName
+                                        </p>
+                                        }
+                                        <p style="margin:6px 0 0;">
+                                            <strong>Solde restant :</strong> @Model.RemainingBalance jours
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <p style="color:#777;font-size:14px;">
+                                Merci pour votre engagement. Pour toute question, veuillez contacter le service RH.
+                            </p>
+
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td align="center"
+                            style="background:#F4F3FF;padding:20px;font-size:12px;color:#888;">
+                            © 2026 Woridge. Tous droits réservés.
+                        </td>
+                    </tr>
+
+                </table>
+
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
