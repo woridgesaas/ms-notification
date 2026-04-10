@@ -13,4 +13,9 @@ public sealed class RabbitMQQueues
     public string ChangePasswordOtp { get; set; } = default!;
     public string OvertimeHandleAlert { get; set; } = null!;
     public string LeaveHandleAlert { get; set; } = null!;
+
+    //interviws
+    public string InterviewCreated { get; set; } = default!;
+    public string InterviewStatusChanged { get; set; } = default!;
+    public string EvaluationSubmitted { get; set; } = default!;
 }

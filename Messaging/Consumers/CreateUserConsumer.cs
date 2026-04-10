@@ -108,7 +108,7 @@ public sealed class CreateUserConsumer : BackgroundService//pour tourner en arri
             Channel = Channel.EMAIL,
             TemplateCode = TemplateCode.USER_CREATED,
             To = eventData.Email,
-            CreatedBy = "AB1234567",//future: remplacer par un cin qui vient du api gateway
+            CreatedBy = "S760251",//future: remplacer par un cin qui vient du api gateway
             Data = eventData
         };
 

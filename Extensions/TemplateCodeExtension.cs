@@ -15,6 +15,8 @@ public class TemplateCodeExtension
             TemplateCode.ABSENCE_ALERT_USER => "Absence non justifiée — Action requise",
             TemplateCode.OVERTIME_ALERT_EMPLOYEE => "Statut de vos heures supplémentaires",
             TemplateCode.LEAVE_APPROVE_ALERT => "Notification - Demande congé",
+            TemplateCode.INTERVIEW_SCHEDULED => "Votre entretien a été planifié",  
+            TemplateCode.INTERVIEW_ASSIGNED => "Un entretien vous a été assigné", 
             _ => throw new TemplateCodeNotFoundException("The following template code : " + templateCode + " was not found"),
 
         };

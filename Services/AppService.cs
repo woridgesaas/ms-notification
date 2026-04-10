@@ -33,7 +33,6 @@ public class AppService : IAppService
 
         var user = await _userRepository.GetUserByCINAsync(request.TargetCin)
                    ?? throw new UserNotFoundException("User not found");
-
         var notification = new Notification
         {
             Title = request.TemplateName,
@@ -43,7 +42,7 @@ public class AppService : IAppService
             Priority = request.Priority,
             TemplateCode = TemplateCode.CUSTOM,
             CreatedAt = DateTime.UtcNow,
-            CreatedBy = 1, // ID System/Auteur
+            CreatedBy = user.Id, // ? utilise l'id du user cible
             Status = Status.CREATED
         };
 

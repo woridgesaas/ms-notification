@@ -16,33 +16,32 @@ public class EmailService(INotificationRepository notificationRepository, IUserR
 
     public async Task SendViaEmailAsync<T>(SendNotificationRequest<T> request)
     {
+        User? user = null;
+        if (!string.IsNullOrEmpty(request.CreatedBy) && request.CreatedBy != "SYSTEM")
+        {
+            user = await _userRepository.GetUserByCINAsync(request.CreatedBy);
+        }
 
-        //* Get employee by CIN
-        User user = await _userRepository.GetUserByCINAsync(request.CreatedBy) ?? throw new UserNotFoundException("User with the following CIN : " + request.CreatedBy + " not found");
-
-        //* Render template and get body
-        string body = await _templateRendererService.RenderTemplateAsync(request.TemplateCode, request.Data);
-
-        //* Get subject
+        string body = await _templateRendererService.RenderTemplateAsync(
+                             request.TemplateCode, request.Data);
         string subject = TemplateCodeExtension.GetSubject(request.TemplateCode);
 
-        //* Send email
         await _emailSenderService.SendEmailAsync(request.To, subject, body);
 
-        //* Persist notification after success
-        Notification notification = new()
+        // ← Sauvegarde seulement si user existe
+        if (user != null)
         {
-            Title = subject,
-            Channel = Channel.EMAIL,
-            Type = NotificationType.NOTIFICATION,
-            Priority = Priority.NORMAL,
-            Status = Status.SENT,
-            TemplateCode = request.TemplateCode,
-            CreatedBy = user.Id
-        };
-
-        //* Add notification to database
-        await _notificationRepository.AddNotificationAsync(notification);
+            Notification notification = new()
+            {
+                Title = subject,
+                Channel = Channel.EMAIL,
+                Type = NotificationType.NOTIFICATION,
+                Priority = Priority.NORMAL,
+                Status = Status.SENT,
+                TemplateCode = request.TemplateCode,
+                CreatedBy = user.Id
+            };
+            await _notificationRepository.AddNotificationAsync(notification);
+        }
     }
-
 }

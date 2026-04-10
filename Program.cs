@@ -64,6 +64,11 @@ builder.Services.AddHostedService<ChangePasswordOtpRequestedConsumer>();
 builder.Services.AddHostedService<OvertimeHandleConsumer>();
 builder.Services.AddHostedService<LeaveHandleConsumer>();
 
+
+builder.Services.AddHostedService<InterviewCreatedConsumer>();
+builder.Services.AddHostedService<InterviewStatusChangedConsumer>();
+builder.Services.AddHostedService<EvaluationSubmittedConsumer>();
+
 // * SignalR
 builder.Services.AddSignalR();
 
