@@ -11,6 +11,10 @@ public enum TemplateCode
     ABSENCE_ALERT_CEO   = 7,   // notification interne CEO
 
     OVERTIME_ALERT_EMPLOYEE = 8,
-    LEAVE_APPROVE_ALERT = 9
+    LEAVE_APPROVE_ALERT = 9,
+    INTERVIEW_SCHEDULED = 10,  
+    INTERVIEW_ASSIGNED = 11
+
+
 
 }

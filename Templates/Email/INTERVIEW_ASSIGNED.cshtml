@@ -1,0 +1,139 @@
+﻿@model ms_notification.DTOs.Email.InterviewAssignedData
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" content="width=device-width, initial-scale=1.0" name="viewport">
+    <style>
+        @@media only screen and (max-width: 480px) {
+            table {
+                width: 100% !important;
+            }
+
+            h1 {
+                font-size: 20px !important;
+            }
+
+            h2 {
+                font-size: 18px !important;
+            }
+
+            p {
+                font-size: 14px !important;
+                line-height: 1.4 !important;
+            }
+
+            td {
+                padding: 15px !important;
+            }
+        }
+    </style>
+</head>
+<body style="margin:0;padding:0;background-color:#F4F3FF;font-family:Arial,Helvetica,sans-serif;">
+    <table width="100%" cellpadding="0" cellspacing="0"
+           style="background-color:#F4F3FF;padding:40px 0;">
+        <tr>
+            <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0"
+                       style="background:#ffffff;border-radius:10px;overflow:hidden;
+                              box-shadow:0 8px 20px rgba(0,0,0,0.05);">
+                    <!-- Header -->
+                    <tr>
+                        <td align="center" style="background:#A29BFE;padding:25px;">
+                            <h1 style="color:#ffffff;margin:0;font-size:24px;">
+                                Entretien Assigné
+                            </h1>
+                        </td>
+                    </tr>
+                    <!-- Body -->
+                    <tr>
+                        <td style="padding:40px 30px;">
+                            <h2 style="color:#333;margin-top:0;">
+                                Cher(e) @Model.InterviewerName,
+                            </h2>
+                            <p style="color:#555;font-size:16px;line-height:1.6;">
+                                Un entretien vous a été assigné pour évaluer le candidat
+                                <strong style="color:#6C63FF;">@Model.CandidateName</strong>
+                                pour le poste de
+                                <strong style="color:#6C63FF;">@Model.TargetPosition</strong>.
+                            </p>
+
+                            <!-- Détails entretien -->
+                            <table width="100%" cellpadding="0" cellspacing="0"
+                                   style="margin:20px 0;background:#F4F3FF;border-radius:8px;
+                                          border-left:4px solid #6C63FF;">
+                                <tr>
+                                    <td style="padding:20px 24px;">
+                                        <p style="margin:0 0 8px;color:#333;font-size:15px;">
+                                            <strong>Date et Heure :</strong>
+                                            <span style="color:#6C63FF;">@Model.StartDateTime</span>
+                                        </p>
+                                        <p style="margin:0 0 8px;color:#333;font-size:15px;">
+                                            <strong>Durée :</strong>
+                                            @Model.DurationMinutes minutes
+                                        </p>
+                                        <p style="margin:0 0 8px;color:#333;font-size:15px;">
+                                            <strong>Type :</strong>
+                                            @Model.Type
+                                        </p>
+                                        @if (!string.IsNullOrEmpty(Model.VideoConferenceLink))
+                                        {
+                                            <p style="margin:0 0 8px;color:#333;font-size:15px;">
+                                                <strong>Lien de visioconférence :</strong>
+                                                <a href="@Model.VideoConferenceLink"
+                                                   style="color:#6C63FF;">
+                                                    @Model.VideoConferenceLink
+                                                </a>
+                                            </p>
+                                        }
+                                        @if (!string.IsNullOrEmpty(Model.Location))
+                                        {
+                                            <p style="margin:0 0 8px;color:#333;font-size:15px;">
+                                                <strong>Lieu :</strong>
+                                                @Model.Location
+                                            </p>
+                                        }
+                                        @if (!string.IsNullOrEmpty(Model.PhoneNumber))
+                                        {
+                                            <p style="margin:0;color:#333;font-size:15px;">
+                                                <strong>Téléphone :</strong>
+                                                @Model.PhoneNumber
+                                            </p>
+                                        }
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <p style="color:#555;font-size:16px;line-height:1.6;">
+                                Merci de bien vouloir vous préparer pour cet entretien
+                                et de soumettre votre évaluation à l'issue de celui-ci.
+                            </p>
+
+                            <table width="100%" cellpadding="0" cellspacing="0"
+                                   style="margin:30px 0;background:#F4F3FF;border-radius:8px;">
+                                <tr>
+                                    <td style="padding:16px 24px;">
+                                        <p style="margin:0;color:#555;font-size:15px;">
+                                            Cordialement,
+                                        </p>
+                                        <p style="margin:6px 0 0;color:#6C63FF;
+                                                  font-size:15px;font-weight:bold;">
+                                            L'équipe RH — @Model.CompanyName
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <!-- Footer -->
+                    <tr>
+                        <td align="center"
+                            style="background:#F4F3FF;padding:20px;font-size:12px;color:#888;">
+                            © 2026 @Model.CompanyName. Tous droits réservés.
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

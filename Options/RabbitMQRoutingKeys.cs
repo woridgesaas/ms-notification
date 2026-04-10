@@ -15,4 +15,9 @@ public sealed class RabbitMQRoutingKeys
     public string ChangePasswordOtp { get; set; } = default!;
     public string OvertimeProcessedAlert { get; set; } = null!;
     public string LeaveProcessedAlert { get; set; } = null!;
+
+    //interviews
+    public string InterviewCreated { get; set; } = default!;
+    public string InterviewStatusChanged { get; set; } = default!;
+    public string EvaluationSubmitted { get; set; } = default!;
 }

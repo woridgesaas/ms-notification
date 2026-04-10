@@ -16,24 +16,18 @@ namespace ms_notification.Services
         {
             var folder = channel.ToString().Equals("Email", StringComparison.OrdinalIgnoreCase) ? "Email" : "App";
             var baseDir = Path.Combine(_env.ContentRootPath, "Templates", folder);
-            string finalTemplate;
-            var cshtmlPath = Path.Combine(baseDir, $"{templateName}.cshtml");
-            var htmlPath = Path.Combine(baseDir, $"{templateName}.html");
-            if (File.Exists(cshtmlPath))
-            {
-                finalTemplate = cshtmlPath;
-            }            
-            else if (File.Exists(htmlPath))
-            {
-                finalTemplate = htmlPath;
-            }
-            else
-            {
-                throw new TemplateNotFoundException($"Le template {templateName} n'existe pas en .cshtml ou .html dans {folder}");
-            }
-            return await File.ReadAllTextAsync(finalTemplate);
 
-            
+            // Cherche récursivement dans tous les sous-dossiers
+            var files = Directory.GetFiles(baseDir, $"{templateName}.*", SearchOption.AllDirectories);
+
+            var file = files.FirstOrDefault(f =>
+                f.EndsWith(".cshtml", StringComparison.OrdinalIgnoreCase) ||
+                f.EndsWith(".html", StringComparison.OrdinalIgnoreCase));
+
+            if (file == null)
+                throw new TemplateNotFoundException($"Le template {templateName} n'existe pas en .cshtml ou .html dans {folder}");
+
+            return await File.ReadAllTextAsync(file);
         }
 
     }
