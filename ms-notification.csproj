@@ -12,6 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Templates\App\Documents\DOCUMENT_REQUEST_CREATED.cshtml" />
     <Content Remove="Templates\Email\LEAVE_APPROVE_ALERT.cshtml" />
   </ItemGroup>
 
@@ -40,6 +41,7 @@
     <Folder Include="Infra\Scripts\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Templates\App\Documents\DOCUMENT_REQUEST_CREATED.cshtml" />
     <None Include="Templates\Email\LEAVE_APPROVE_ALERT.cshtml" />
   </ItemGroup>
 

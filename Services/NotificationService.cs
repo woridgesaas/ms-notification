@@ -23,10 +23,10 @@ public class NotificationService(IEmailService emailService, IAppService appServ
             case Channel.EMAIL:
                 await _emailService.SendViaEmailAsync(sendNotificationRequest);
                 break;
-
             /**case Channel.APP:
-                await _appService.SendViaAppAsync<PushNotificationRequest>(request);
-                break;*/
+                           await _appService.SendViaAppAsync<PushNotificationRequest>(request);
+                           break;*/
+
 
             default:
                 throw new NotificationChannelNotSupportedException("The following channel : " + sendNotificationRequest.Channel + " is not supported");
@@ -38,7 +38,7 @@ public class NotificationService(IEmailService emailService, IAppService appServ
        
              return await _appService.SendViaAppAsync<PushNotificationRequest>(request);
     }
-
+   
     public async Task<List<NotificationResponse>> GetMyNotificationsAsync(string cin)
     {
         User user = await _userRepository.GetUserByCINAsync(cin) ?? throw new UserNotFoundException("User with the following CIN : " + cin + " not found");

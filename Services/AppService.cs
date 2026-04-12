@@ -58,12 +58,10 @@ public class AppService : IAppService
         notification.Receivers.Add(receiveEntry);
 
         await _notificationRepository.SaveChangesAsync();
-
         var response = NotificationMapper.ToResponse(receiveEntry);
 
         // 6. Push SignalR
         await _contextHub.Clients.User(request.TargetCin).SendAsync("ReceiveNotification", response);
-
         return response;
     }
 

@@ -1,4 +1,5 @@
 using DotNetEnv;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
@@ -63,8 +64,8 @@ builder.Services.AddHostedService<AbsenceAlertCeoConsumer>();
 builder.Services.AddHostedService<ChangePasswordOtpRequestedConsumer>();
 builder.Services.AddHostedService<OvertimeHandleConsumer>();
 builder.Services.AddHostedService<LeaveHandleConsumer>();
-
-
+builder.Services.AddHostedService<UserSyncConsumer>();
+builder.Services.AddHostedService<DocumentRequestCreatedConsumer>();
 builder.Services.AddHostedService<InterviewCreatedConsumer>();
 builder.Services.AddHostedService<InterviewStatusChangedConsumer>();
 builder.Services.AddHostedService<EvaluationSubmittedConsumer>();
