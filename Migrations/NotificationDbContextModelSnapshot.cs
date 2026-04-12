@@ -143,6 +143,9 @@ namespace ms_notification.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("last_name");
 
+                    b.Property<string>("Role")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CIN")
