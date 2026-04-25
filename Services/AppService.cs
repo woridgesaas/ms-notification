@@ -18,13 +18,15 @@ public class AppService : IAppService
     private readonly ITemplateProvider _templateProvider;
     private readonly IUserRepository _userRepository;
     private readonly INotificationRepository _notificationRepository;
-    public AppService(IHubContext<NotificationHub> contextHub ,ITemplateRendererService templateRendererService , ITemplateProvider templateProvider , IUserRepository userRepository , INotificationRepository notifRepo)
+    private readonly ILogger<AppService> _logger;
+    public AppService(IHubContext<NotificationHub> contextHub ,ITemplateRendererService templateRendererService , ITemplateProvider templateProvider , IUserRepository userRepository , INotificationRepository notifRepo, ILogger<AppService> logger)
     {
         this._contextHub = contextHub;
         this._templateProvider = templateProvider;
         this._templateRenderer = templateRendererService;
         this._userRepository = userRepository;
         this._notificationRepository = notifRepo;
+        this._logger = logger;
     }
     public async Task<NotificationResponse> SendViaAppAsync<T>(PushNotificationRequest request)
     {
@@ -33,6 +35,7 @@ public class AppService : IAppService
 
         var user = await _userRepository.GetUserByCINAsync(request.TargetCin)
                    ?? throw new UserNotFoundException("User not found");
+        this._logger.LogWarning("User with CIN {CIN} while sending push notification", request.TargetCin);
         var notification = new Notification
         {
             Title = request.TemplateName,
@@ -62,6 +65,7 @@ public class AppService : IAppService
 
         // 6. Push SignalR
         await _contextHub.Clients.User(request.TargetCin).SendAsync("ReceiveNotification", response);
+        this._logger.LogInformation("Push Notification sent to user with CIN {CIN} , notification Id {notifId}", request.TargetCin,response.Id );
         return response;
     }
 
