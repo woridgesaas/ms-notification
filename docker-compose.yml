@@ -33,6 +33,7 @@ services:
             - "${MSSQL_PORT}:1433"
         networks:
             - woridge-external-network
+            - provisioning-service-network
         volumes:
             - ms-notification_db:/var/opt/mssql
 
@@ -53,6 +54,8 @@ networks:
   woridge-external-network:
     external: true
   mailer-network:
+    external: true
+  provisioning-service-network:
     external: true
     
 volumes:

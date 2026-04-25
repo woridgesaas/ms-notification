@@ -1,5 +1,5 @@
 using DotNetEnv;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +9,7 @@ using ms_notification.Exceptions;
 using ms_notification.Factories;
 using ms_notification.Hubs;
 using ms_notification.Messaging.Consumers;
+using ms_notification.Middleware;
 using ms_notification.Options;
 using ms_notification.Repositories;
 using ms_notification.Services;
@@ -44,6 +45,9 @@ builder.Services.AddDbContext<NotificationDbContext>(options =>
 // * Health checks
 builder.Services.AddHealthChecks()
     .AddSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")!);
+// * Custom  authentication
+builder.Services.AddAuthentication("HeaderAuthentication")
+    .AddScheme<AuthenticationSchemeOptions, HeaderAuthenticationHandler>("HeaderAuthentication", null);
 
 // * Dependency injection
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
@@ -84,17 +88,11 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("WoridgeCorsPolicy", policy =>
     {
-        var allowedOrigins = builder.Configuration
-            .GetSection("Cors:AllowedOrigins")
-            .Get<string[]>();
-
-        if (allowedOrigins is null || allowedOrigins.Length == 0)
-            return;
-
-        policy.SetIsOriginAllowed(_ => true)
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
+        policy
+            .SetIsOriginAllowed(builder.Configuration["Cors:AllowedOrigins"] => true)
+            .AllowAnyHeader()            
+            .AllowAnyMethod()               
+            .AllowCredentials();
     });
 });
 
@@ -104,9 +102,9 @@ var app = builder.Build();
 // * Middleware
 if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
-
+//app.UseCors("WoridgeCorsPolicy");
 app.UseMiddleware<GlobalExceptionHandler>();
-app.UseCors("WoridgeCorsPolicy");
+
 
 // * Endpoints
 app.MapHealthChecks("/health", new HealthCheckOptions());
