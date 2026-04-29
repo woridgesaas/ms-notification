@@ -1,6 +1,10 @@
 stages:
   - build
 
+workflow:
+    rules:
+        - when: never
+
 build:
   stage: build
   image: docker:24
@@ -10,6 +14,5 @@ build:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
   script:
-    - echo "Test" 
     - docker build -t ms-notification -f Infra/Dockerfile .
   
