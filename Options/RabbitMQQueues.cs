@@ -15,6 +15,7 @@ public sealed class RabbitMQQueues
     public string LeaveHandleAlert { get; set; } = null!;
     public string DocumentRequestCreated { get; set; } = null!;
     public string UserSyncCreated { get; set; } = default!;
+    public string ContractGenerated { get; set; } = string.Empty;
 
 
     //interviws

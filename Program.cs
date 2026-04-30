@@ -84,6 +84,9 @@ builder.Services.AddHostedService<InterviewStatusChangedConsumer>();
 builder.Services.AddHostedService<EvaluationSubmittedConsumer>();
 builder.Services.AddHostedService<TenantReadyConsumer>();
 builder.Services.AddScoped<TenantConnectionFactory>();
+builder.Services.AddHostedService<ContractGeneratedConsumer>();
+builder.Services.AddSingleton<IPdfGeneratorService, PdfGeneratorService>();
+
 // * SignalR
 builder.Services.AddSignalR();
 
