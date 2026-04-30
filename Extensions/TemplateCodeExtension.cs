@@ -17,6 +17,7 @@ public class TemplateCodeExtension
             TemplateCode.LEAVE_APPROVE_ALERT => "Notification - Demande congé",
             TemplateCode.INTERVIEW_SCHEDULED => "Votre entretien a été planifié",  
             TemplateCode.INTERVIEW_ASSIGNED => "Un entretien vous a été assigné", 
+            TemplateCode.CONTRACT_GENERATED => "Votre contrat Woridge est prêt",
             _ => throw new TemplateCodeNotFoundException("The following template code : " + templateCode + " was not found"),
 
         };

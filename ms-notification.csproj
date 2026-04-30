@@ -12,6 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Templates/Email/CONTRACT_GENERATED.cShtml" />
     <Content Remove="Templates\App\Documents\DOCUMENT_REQUEST_CREATED.cshtml" />
     <Content Remove="Templates\Email\LEAVE_APPROVE_ALERT.cshtml" />
   </ItemGroup>
@@ -26,6 +27,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0" />
+    <PackageReference Include="PuppeteerSharp" Version="24.39.1" />
     <PackageReference Include="RabbitMQ.Client" Version="7.2.1" />
     <PackageReference Include="RazorLight" Version="2.3.1" />
     <PackageReference Include="Serilog.AspNetCore" Version="8.0.0" />
@@ -41,6 +43,7 @@
     <Folder Include="Infra\Scripts\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Templates/Email/CONTRACT_GENERATED.cshtml" />
     <None Include="Templates\App\Documents\DOCUMENT_REQUEST_CREATED.cshtml" />
     <None Include="Templates\Email\LEAVE_APPROVE_ALERT.cshtml" />
   </ItemGroup>

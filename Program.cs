@@ -73,6 +73,8 @@ builder.Services.AddHostedService<DocumentRequestCreatedConsumer>();
 builder.Services.AddHostedService<InterviewCreatedConsumer>();
 builder.Services.AddHostedService<InterviewStatusChangedConsumer>();
 builder.Services.AddHostedService<EvaluationSubmittedConsumer>();
+builder.Services.AddHostedService<ContractGeneratedConsumer>();
+builder.Services.AddSingleton<IPdfGeneratorService, PdfGeneratorService>();
 
 // * SignalR
 builder.Services.AddSignalR();
