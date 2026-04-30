@@ -21,4 +21,7 @@ public sealed class RabbitMQQueues
     public string InterviewCreated { get; set; } = default!;
     public string InterviewStatusChanged { get; set; } = default!;
     public string EvaluationSubmitted { get; set; } = default!;
+
+    //Tenant :
+    public string TenantReady { get; set; } = default!;
 }

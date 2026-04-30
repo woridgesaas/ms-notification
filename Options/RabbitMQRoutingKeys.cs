@@ -22,4 +22,7 @@ public sealed class RabbitMQRoutingKeys
     public string InterviewCreated { get; set; } = default!;
     public string InterviewStatusChanged { get; set; } = default!;
     public string EvaluationSubmitted { get; set; } = default!;
+
+    //Tenant :
+    public string TenantReady { get; set; } = default!;
 }

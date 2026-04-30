@@ -39,8 +39,16 @@ builder.Host.UseSerilog((hostingContext, configuration) =>
 });
 
 // * Database configuration
-builder.Services.AddDbContext<NotificationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<NotificationDbContext>((serviceProvider , optionsBuilder) =>
+{
+    var baseConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    var tenantService = serviceProvider.GetRequiredService<ITenantService>();
+    var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
+
+    logger.LogInformation("[EF] Configuring DbContext with connection string for subdomain: {Subdomain}",
+        tenantService.Subdomain);
+    optionsBuilder.UseSqlServer(tenantService.GetConnectionString());
+});
 
 // * Health checks
 builder.Services.AddHealthChecks()
@@ -57,6 +65,7 @@ builder.Services.AddScoped<ITemplateRendererService, TemplateRendererService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IEmailSenderService, EmailSenderService>();
 builder.Services.AddScoped<IAppService, AppService>();
+builder.Services.AddScoped<ITenantService, TenantService>();
 builder.Services.AddScoped<INotificationRequestFactory, NotificationRequestFactory>();
 builder.Services.AddSingleton<IUserIdProvider, CinUserIdProvider>();
 builder.Services.AddSingleton<IRabbitMQConnection, RabbitMQConnection>();
@@ -73,7 +82,8 @@ builder.Services.AddHostedService<DocumentRequestCreatedConsumer>();
 builder.Services.AddHostedService<InterviewCreatedConsumer>();
 builder.Services.AddHostedService<InterviewStatusChangedConsumer>();
 builder.Services.AddHostedService<EvaluationSubmittedConsumer>();
-
+builder.Services.AddHostedService<TenantReadyConsumer>();
+builder.Services.AddScoped<TenantConnectionFactory>();
 // * SignalR
 builder.Services.AddSignalR();
 
@@ -103,6 +113,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
 //app.UseCors("WoridgeCorsPolicy");
+app.UseMiddleware<TenantMiddleware>();
 app.UseMiddleware<GlobalExceptionHandler>();
 
 
