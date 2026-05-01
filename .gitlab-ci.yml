@@ -1,10 +1,6 @@
 stages:
   - build
 
-workflow:
-    rules:
-        - when: never
-
 build:
   stage: build
   image: docker:24
