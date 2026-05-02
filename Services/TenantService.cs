@@ -6,6 +6,8 @@ namespace ms_notification.Services
     {
         private IConfiguration _configuration;
         private ILogger<TenantService> _logger;
+
+        private const string DEFAULT_SUBDOMAIN = "dev-local";
         public TenantService(IConfiguration configuration, ILogger<TenantService> logger)
         {
             _configuration = configuration;
@@ -19,10 +21,10 @@ namespace ms_notification.Services
         {
             var baseConfig = this._configuration.GetConnectionString("DefaultConnection");
             SqlConnectionStringBuilder sqlStringBuilder = new(baseConfig);
-            if (string.IsNullOrEmpty(Subdomain) || string.IsNullOrEmpty(ServiceKey))
+            if (string.IsNullOrEmpty(Subdomain) || Subdomain == DEFAULT_SUBDOMAIN)
             {
-                _logger.LogError("[TenantService]: Tenant subdomain or service key is null or empty. Returning base connection string.");
-                return baseConfig;
+                _logger.LogInformation("[TenantService] Using default connection string for subdomain: {Subdomain}", Subdomain);
+                return baseConfig; 
             }
             sqlStringBuilder.InitialCatalog = $"woridge_{Subdomain}_{ServiceKey}";
             return sqlStringBuilder.ConnectionString;
