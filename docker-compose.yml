@@ -13,9 +13,13 @@ services:
             - "SmtpSettings__Username=${SMTP_USERNAME}"
             - "SmtpSettings__Password=${SMTP_PASSWORD}"
             - "SmtpSettings__UseSsl=${SMTP_USE_SSL}"
+            - RabbitMQ__Host=${RABBITMQ_HOST}
+            - RabbitMQ__Port=${RABBITMQ_PORT}
+            - RabbitMQ__Username=${RABBITMQ_USER}
+            - RabbitMQ__Password=${RABBITMQ_PASSWORD}
 
         ports:
-            - "${NOTIFICATION_PORT}:8080"
+            - "${SERVER_PORT}:8080"
         networks:
             - woridge-external-network
         depends_on:
