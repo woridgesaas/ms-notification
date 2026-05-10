@@ -1,11 +1,14 @@
 using DotNetEnv;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using ms_notification.Config;
 using ms_notification.Data;
 using ms_notification.Exceptions;
+using ms_notification.Extensions;
 using ms_notification.Factories;
 using ms_notification.Hubs;
 using ms_notification.Messaging.Consumers;
@@ -14,6 +17,7 @@ using ms_notification.Options;
 using ms_notification.Repositories;
 using ms_notification.Services;
 using Serilog;
+using System.Text;
 
 // * Load environment variables
 Env.Load();
@@ -57,6 +61,8 @@ builder.Services.AddHealthChecks()
 builder.Services.AddAuthentication("HeaderAuthentication")
     .AddScheme<AuthenticationSchemeOptions, HeaderAuthenticationHandler>("HeaderAuthentication", null);
 
+//builder.Services.WoridgeAddAuthenticationSchema(builder.Configuration);
+
 // * Dependency injection
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -95,27 +101,28 @@ builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpS
 
 // * RabbitMQ settings
 builder.Services.Configure<RabbitMQSettings>(builder.Configuration.GetSection("RabbitMQ"));
-
+Console.WriteLine(builder.Configuration["Cors:AllowedOrigins"]);
 // * CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("WoridgeCorsPolicy", policy =>
     {
         policy
-            .WithOrigins(builder.Configuration["Cors:AllowedOrigins"])
-            .AllowAnyHeader()            
-            .AllowAnyMethod()               
+            .WithOrigins(builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>())  
+            .AllowAnyHeader()
+            .AllowAnyMethod()
             .AllowCredentials();
     });
 });
 
 // ---- Build ----
 var app = builder.Build();
-
+app.UseCors("WoridgeCorsPolicy");
+app.UseWebSockets();
 // * Middleware
 if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
-//app.UseCors("WoridgeCorsPolicy");
+
 app.UseMiddleware<TenantMiddleware>();
 app.UseMiddleware<GlobalExceptionHandler>();
 
@@ -124,7 +131,7 @@ app.UseMiddleware<GlobalExceptionHandler>();
 app.MapHealthChecks("/health", new HealthCheckOptions());
 app.MapGet("/health-API", () => "Healthcheck, MS-notification is UP");
 app.MapControllers();
-app.MapHub<NotificationHub>("/notificationHub");
+app.MapHub<NotificationHub>("/api/notification/notificationHub");
 
 // * Migrations
 using var scope = app.Services.CreateScope();

@@ -12,12 +12,12 @@ namespace ms_notification.Hubs
          }
         public override async Task OnConnectedAsync()
         {
-            this.__logger.LogError("rak in");
+           
             // 1. Get Cin  claim from token
             var cin = Context.User?.FindFirst("CIN")?.Value;
 
             // 2. Get tenantSubdomain
-            var tenantId = Context.User?.FindFirst("TenantId")?.Value;
+            var tenantId = Context.User?.FindFirst("Subdomain")?.Value;
 
             await Groups.AddToGroupAsync(Context.ConnectionId, tenantId ?? "default");
             this.__logger.LogInformation("User with CIN={CIN} connected to Hub on group {TenantId}", cin, tenantId);
