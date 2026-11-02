@@ -17,4 +17,13 @@ public class CreateUserNotificationEvent
     [Required(ErrorMessage = "Password is required")]
     [StringLength(50, MinimumLength = 8, ErrorMessage = "Password must be between 8 and 50 characters")]
     public string Password { get; set; } = null!;
+
+    public override string ToString()
+{
+    return $"CreateUserNotificationEvent {{ " +
+           $"FullName = '{FullName ?? "null"}', " +
+           $"Email = '{Email ?? "null"}', " +
+           $"Password = '{Password ?? "null"}' " +
+           $"}}";
+}
 }
