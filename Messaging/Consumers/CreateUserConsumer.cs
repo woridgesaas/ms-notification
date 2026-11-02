@@ -77,7 +77,7 @@ public sealed class CreateUserConsumer : BackgroundService//pour tourner en arri
     private async Task HandleMessageAsync(object _, BasicDeliverEventArgs args)
     {
         var json = Encoding.UTF8.GetString(args.Body.ToArray());
-        _logger.LogDebug("Raw JSON received : {}" , json)
+        _logger.LogDebug("Raw JSON received : {}" , json);
         try
         {
             var eventData = JsonSerializer.Deserialize<CreateUserNotificationEvent>(json,
