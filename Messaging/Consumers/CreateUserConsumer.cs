@@ -14,6 +14,7 @@ namespace ms_notification.Messaging.Consumers;
 
 public sealed class CreateUserConsumer : BackgroundService//pour tourner en arrière-plan
 {
+    private ILogger<CreateUserConsumer> _logger;
     private readonly IRabbitMQConnection _connection;
     private readonly RabbitMQSettings _settings;
     private readonly IServiceProvider _serviceProvider;
@@ -22,11 +23,14 @@ public sealed class CreateUserConsumer : BackgroundService//pour tourner en arri
     public CreateUserConsumer(
         IRabbitMQConnection connection,
         IOptions<RabbitMQSettings> settings,
-        IServiceProvider serviceProvider)
+        IServiceProvider serviceProvider,
+        ILogger<CreateUserConsumer> logger
+        )
     {
         _connection = connection;
         _settings = settings.Value;
         _serviceProvider = serviceProvider;
+        _logger = logger;
     }
 
 
@@ -44,7 +48,7 @@ public sealed class CreateUserConsumer : BackgroundService//pour tourner en arri
             autoAck: false,
             consumer: consumer);
 
-
+        _logger.LogDebug("Consuming on exchnage {}" , _settings.Exchange);
         // Maintient le service actif jusqu'à l'arrêt de l'application
         await Task.Delay(Timeout.Infinite, stoppingToken);
     }
@@ -73,7 +77,7 @@ public sealed class CreateUserConsumer : BackgroundService//pour tourner en arri
     private async Task HandleMessageAsync(object _, BasicDeliverEventArgs args)
     {
         var json = Encoding.UTF8.GetString(args.Body.ToArray());
-
+        _logger.LogDebug("Raw JSON received : {}" , json)
         try
         {
             var eventData = JsonSerializer.Deserialize<CreateUserNotificationEvent>(json,
@@ -84,7 +88,6 @@ public sealed class CreateUserConsumer : BackgroundService//pour tourner en arri
                 await _channel!.BasicNackAsync(args.DeliveryTag, false, requeue: false);
                 throw new RabbitMQConsumerException("Event null — message rejeté définitivement");
             }
-
             await ProcessEventAsync(eventData);
 
             await _channel!.BasicAckAsync(args.DeliveryTag, false);
